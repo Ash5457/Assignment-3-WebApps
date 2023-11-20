@@ -36,7 +36,7 @@
     <h2>Search Results</h2>
     <div>
       <ul>
-        <li><a href="view-item.html">Places I want to go</a></li>
+        <li><a href="view-item.php">Places I want to go</a></li>
         <li>Things I want to eat</li>
       </ul>
     </div>
