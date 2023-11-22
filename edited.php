@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="./styles/main.css" />
-  <title>You Have Successfully Logged Out!</title>
+  <title>Your List Item Has Been Edited!</title>
 </head>
 
 <body>
@@ -15,7 +15,7 @@
     <?php include './includes/nav.php' ?>
 
     <main>
-      <p>Thank you for for using our site, see you next time!.</p>
+      <p>You can see your updated entry <a href="view-item.php">Here</a></p>
     </main>
   </div>
 
