@@ -1,4 +1,12 @@
 <?php
+// makes sure the user is logged in before they can edit something
+session_start();
+if (!isset($_SESSION['username'])){
+header("Location: login.php");
+exit();
+}
+
+
 // declare error array
 $errors = array();
 
@@ -7,7 +15,7 @@ $title  = $_POST['title'] ?? "";
 $description  = $_POST['description'] ?? "";
 $status  = $_POST['status'] ?? null;
 $details  = $_POST['details'] ?? "";
-$proof    = $_FILES['proof'] ?? "No Image Uploaded.";
+$proof    = $_FILES['proof'] ?? "";
 $rating   = $_POST['rating'] ?? "0";
 $comp_date  = $_POST['completionDate'] ?? 0000-00-00;
 $public   = $_POST['public_view'] ?? "Private";
@@ -17,6 +25,85 @@ require './includes/library.php';
 
 $pdo = connectDB();
 
+//validate the form
+if (isset($_POST['submit'])) {
+
+  if (strlen($title) === 0) {
+    $errors['title'] = true;
+  }
+
+  if (strlen($description) === 0) {
+      $errors['description'] = true;
+  }
+
+  $valid_status = ['onhold', 'progressing', 'complete'];
+  if (!in_array($status, $valid_status)) {
+    $errors['perspective'] = true;
+  }
+
+  if (strlen($details) === 0) {
+    $errors['details'] = true;
+  }
+
+// Check for corruption
+  if(!isset($_FILES[$proof]['error']) || is_array($_FILES[$proof]['error'])) {
+    $errors['proof'] = true;
+  }
+  // Check if anything is saved
+  elseif (strlen($proof) === 0) {
+    $errors['proof'] = true;
+  } // Check if any errors occured
+  elseif ($_FILES[$proof]['error'] > 0) {
+    $errors['prooferror'] = true;
+    }
+  } // Make sure file is within the desired size
+  elseif ($_FILES[$proof]['size'] > 1500000) {
+    $errors['proofsize'] = true;
+    }
+
+    // Check the File type
+    if (exif_imagetype( $_FILES[$proof]['tmp_name']) != IMAGETYPE_JPEG
+     and exif_imagetype( $_FILES[$proof]['tmp_name']) != IMAGETYPE_PNG){
+
+      $errors['prooftype'] = true;
+    }
+    if(is_uploaded_file($_FILES[$proof]['tmp_name'])){
+      $query = "SELECT a.list_id
+      FROM 3420_assg_lists AS a
+      LEFT JOIN 3420_assg_users AS b ON b.id = a.user_id
+      WHERE b.username = ? AND a.title = ?";
+      $uid_stmt = $pdo->prepare($query);
+      $uid_stmt->execute([$username, $title]);
+
+      $uniqueID =  $uid_stmt->fetch();
+      $path = '/uploads';
+      $fileroot = "ListImage";
+    
+      //get the original file name for extension, where 'fileToProcess' was the name of the
+      //file upload form element
+      $filename = $_FILES[$proof]['name'];
+      $exts = explode(".", $filename); // split based on period
+      $ext = $exts[count($exts)-1]; //take the last split (contents after last period)
+      $filename = $fileroot.$uniqueID.".".$ext;  //build new filename
+      $newname = $path.$filename; //add path the file name
+    
+    }
+  
+    // If no errors, update database
+    if (count($errors) === 0) {
+    // Edit the list in Database`:
+    $getid = "SELECT id FROM 3420_assg_lists WHERE `user_id` = ?";
+    $getid_stmt = $pdo->prepare($getid);
+    $getid_stmt ->execute([$uniqueID]); // idk if I did this part right
+    $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `image_url`= ?, `completion_date` = ?, `publicity` = ?
+    WHERE `id` = ? AND `user_id` = ?";
+    $edit_stmt = $pdo->prepare($query);
+    $edit_stmt->execute([$title, $description, $status, $details, $proof, $comp_date, $public, $getid_stmt, $uniqueID]);
+
+    // Redirect:
+    header("Location: edited.php");
+    exit;
+  }
 
 ?>
 
@@ -95,7 +182,8 @@ Bucket List Item Description</textarea
           <input type="hidden" name="MAX_FILE_SIZE" value="1500000">
           <input type="file" id="proof" name="proof">
           <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">Please Upload Your File.</span>
-          <span class="error <?= !isset($errors['proofsize']) ? 'hidden' : '' ?>">The File Is Too Large (Max 2MB).</span>
+          <span class="error <?= !isset($errors['prooferror']) ? 'hidden' : '' ?>">Something Went Wrong With The Image.</span>
+          <span class="error <?= !isset($errors['proofsize']) ? 'hidden' : '' ?>">The File Is Too Large (Max 1.5MB).</span>
           <span class="error <?= !isset($errors['prooftype']) ? 'hidden' : '' ?>">The File Is The Wrong Format (PNG, JPG, JPEG).</span>
         </div>
       </fieldset>
