@@ -2,7 +2,22 @@
 // declare error array
 $errors = array();
 
+// set default values
+$title  = $_POST['title'] ?? "";
+$description  = $_POST['description'] ?? "";
 $status  = $_POST['status'] ?? null;
+$details  = $_POST['details'] ?? "";
+$proof    = $_FILES['proof'] ?? "No Image Uploaded.";
+$rating   = $_POST['rating'] ?? "0";
+$comp_date  = $_POST['completionDate'] ?? 0000-00-00;
+$public   = $_POST['public_view'] ?? "Private";
+
+//Include library and connect to DB
+require './includes/library.php';
+
+$pdo = connectDB();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +41,7 @@ $status  = $_POST['status'] ?? null;
 
       <?php include './includes/nav.php' ?>
     </header>
-    <form action="#" method="post" enctype="multipart/form-data">
+    <form id="edit-form" method="post" enctype="multipart/form-data">
       <fieldset>
         <legend>List Info</legend>
         <div>
@@ -71,6 +86,7 @@ Bucket List Item Description</textarea
         </div>
         <div>
           <label for="proof">Proof (Image upload):</label>
+          <input type="hidden" name="MAX_FILE_SIZE" value="1500000">
           <input type="file" id="proof" name="proof">
         </div>
       </fieldset>
