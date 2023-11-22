@@ -307,3 +307,20 @@ form.search-form {
   border: 0.25em solid #ccc;
   border-radius: 0.15em;
 }
+
+/* Error Message*/
+.error {
+  display: inline-block;
+  color: palevioletred;
+  font-style: italic;
+  margin: 1em;
+}
+
+div>.error {
+  /* if error is in div, no top/bottom margins needed*/
+  margin: 0 1em;
+}
+
+.hidden {
+  display: none;
+}

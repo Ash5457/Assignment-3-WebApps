@@ -52,12 +52,14 @@ $pdo = connectDB();
             name="title"
             value="Bucket List Item Title"
           >
+          <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
         </div>
         <div>
           <label for="description">Description:</label>
           <textarea id="description" name="description">
 Bucket List Item Description</textarea
           >
+          <span class="error <?= !isset($errors['description']) ? 'hidden' : '' ?>">Please Describe Your List.</span>
         </div>
       </fieldset>
       <fieldset>
@@ -78,16 +80,24 @@ Bucket List Item Description</textarea
           <?= $status == 'complete' ? 'checked' : '' ?>
         </div>
       </fieldset>
+
+      <span class="error <?= !isset($errors['status']) ? 'hidden' : '' ?>">Please Choose List Status.</span>
+
       <fieldset>
         <legend>Validation</legend>
         <div>
           <label for="details">Details:</label>
           <textarea id="details" name="details"></textarea>
+          <span class="error <?= !isset($errors['details']) ? 'hidden' : '' ?>">Please Describe Your Entry.</span>
         </div>
         <div>
           <label for="proof">Proof (Image upload):</label>
           <input type="hidden" name="MAX_FILE_SIZE" value="1500000">
           <input type="file" id="proof" name="proof">
+          <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">Please Upload Your File.</span>
+          <!-- <span class="error<?= if($_FILES["proof"]["size"] > 1500000){!isset($errors['proof']) ? 'hidden' : '';} ?>>The File Is Too Large (Max 2MB).</span> -->
+          <!-- <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">The File Is Too Large (Max 2MB).</span> -->
+          <!-- <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">The File Is The Wrong Format (GIF, PNG, JPEG).</span> -->
         </div>
       </fieldset>
       <fieldset>
