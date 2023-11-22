@@ -48,6 +48,7 @@
             'Places I want to go',
             'Things I want to eat',
         ];
+      }
     ?>
     <fieldset>
     <h2>Search Results</h2>

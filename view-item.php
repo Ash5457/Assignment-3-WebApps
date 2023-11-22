@@ -24,6 +24,8 @@
       <pre>
 Parent List:
     <a href="">Places I want to go</a>
+Entry Date
+    <input type="date" value="2019-03-08" disabled>
 Completion Date
     <input type="date" value="2019-03-08" disabled>
       </pre>

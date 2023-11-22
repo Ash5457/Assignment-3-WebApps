@@ -1,3 +1,10 @@
+<?php
+// declare error array
+$errors = array();
+
+$status  = $_POST['status'] ?? null;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -43,14 +50,17 @@ Bucket List Item Description</textarea
         <div>
           <input type="radio" name="Status" id="onhold" value="o">
           <label for="onhold">On Hold</label>
+          <?= $status == 'onhold' ? 'checked' : '' ?>
         </div>
         <div>
           <input type="radio" name="Status" id="progressing" value="p">
           <label for="progressing">In Progress</label>
+          <?= $status == 'progressing' ? 'checked' : '' ?>
         </div>
         <div>
           <input type="radio" name="Status" id="complete" value="c">
           <label for="complete">Completed</label>
+          <?= $status == 'complete' ? 'checked' : '' ?>
         </div>
       </fieldset>
       <fieldset>
@@ -69,6 +79,7 @@ Bucket List Item Description</textarea
         <div>
           <label for="rating">Score:</label>
           <input type="range" id="rating" name="rating" min="1" max="100">
+          <output for="rating"></output>
         </div>
         <div>
           <label for="completionDate">Completion Date:</label>
@@ -79,7 +90,8 @@ Bucket List Item Description</textarea
         <legend>Options</legend>
         <div>
           <label for="public_view">Make List Public?:</label>
-          <input type="checkbox" id="public_view" name="public_view" checked>
+          <input type="hidden" id="public_view" name="public_view" value="Private">
+          <input type="checkbox" id="public_view" name="public_view" value ="Public" checked>
         </div>
       </fieldset>
       <input type="submit" value="Submit">
