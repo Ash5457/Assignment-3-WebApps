@@ -25,13 +25,30 @@
           type="text"
           class="search_input"
           placeholder="Search for lists in the form"
+          name="search_query" 
         >
+         <!--Added name attribute for the search input ^-->
         <button type="button" class="search_button">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
         <button type="button" class="feelin_lucky">Feelin Lucky?</button>
       </form>
     </div>
+    <?php
+    // Check if a search query is present in the URL
+    if (isset($_GET['search_query'])) {
+        // Perform your filtered query here
+        $search_query = $_GET['search_query'];
+        // You can modify the query based on your database structure and fields
+        // For example, if you are searching in a table named 'lists' and a column named 'list_name'
+        // $sql = "SELECT * FROM lists WHERE list_name LIKE '%$search_query%'";
+        
+        // Dummy search results for demonstration
+        $search_results = [
+            'Places I want to go',
+            'Things I want to eat',
+        ];
+    ?>
     <fieldset>
     <h2>Search Results</h2>
     <div>
