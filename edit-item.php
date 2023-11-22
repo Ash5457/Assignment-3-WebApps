@@ -95,9 +95,8 @@ Bucket List Item Description</textarea
           <input type="hidden" name="MAX_FILE_SIZE" value="1500000">
           <input type="file" id="proof" name="proof">
           <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">Please Upload Your File.</span>
-          <!-- <span class="error<?= if($_FILES["proof"]["size"] > 1500000){!isset($errors['proof']) ? 'hidden' : '';} ?>>The File Is Too Large (Max 2MB).</span> -->
-          <!-- <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">The File Is Too Large (Max 2MB).</span> -->
-          <!-- <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">The File Is The Wrong Format (GIF, PNG, JPEG).</span> -->
+          <span class="error <?= !isset($errors['proofsize']) ? 'hidden' : '' ?>">The File Is Too Large (Max 2MB).</span>
+          <span class="error <?= !isset($errors['prooftype']) ? 'hidden' : '' ?>">The File Is The Wrong Format (PNG, JPG, JPEG).</span>
         </div>
       </fieldset>
       <fieldset>
