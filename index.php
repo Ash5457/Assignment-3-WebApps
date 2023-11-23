@@ -7,6 +7,40 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
+$userid = $_SESSION['user_id'];
+// declare error array
+$errors = array();
+
+
+// delcare defaults
+$title              = $_POST['title'] ?? "";
+$description        = $_POST['description'] ?? "";
+$public             = $_POST['public_view'] ?? 'Public';
+
+
+
+//Include library and connect to DB
+require './includes/library.php';
+
+$pdo = connectDB();
+if (isset($_POST['submit'])) {
+  if (strlen($title) == 0) {
+    $errors['title'] = true;
+  }
+  if (strlen($description) == 0) {
+    $errors['description'] = true;
+  }
+
+  if (count($errors) === 0) { 
+    $listquery = "INSERT INTO 3420_assg_lists (`user_id`, `title`, `description`, `publicity`) VALUES (?, ?, ?, ?)";
+    $list_stmt = $pdo->prepare($listquery);
+    $list_stmt->execute([$userid, $title, $description, $public]);
+    
+    // refresh page
+    header("Location: index.php");
+    exit();
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -35,48 +69,46 @@ if (!isset($_SESSION['user_id'])) {
     <ul>
     <?php
             // Fetch and display user's lists from the database
-            include './includes/library.php';
-            $pdo = connectDB();
-            $user_id = $_SESSION['user_id'];
-            $stmt = $pdo->prepare("SELECT list_id, title FROM 3420_assg_lists WHERE user_id = ?");
-            $stmt->execute([$user_id]);
+            $varpub ="Public";
+            $varpriv ="Private";
+            $query = "SELECT list_id, user_id, title FROM 3420_assg_lists WHERE publicity = ? OR user_id = ? AND publicity = ?";
+            $stmt = $pdo->prepare($query);
+            $stmt->execute([$varpub, $userid, $varpriv]);
             $user_lists = $stmt->fetchAll();
 
             foreach ($user_lists as $list) :
             ?>
-      <li><a href="view-item.php">Places I want to go</a> - <a href="edit-item.php"><i
-            class="fa-solid fa-pen-to-square"></i></a>
+      <li><a href="view-item.php"><?= $list["title"] ?></a> 
+      <?php if ($list["user_id"] == $userid) { ?> 
+        <a href="edit-item.php"><i class="fa-solid fa-pen-to-square"></i></a>
         <button class="btn btn-delete">
           <span class="mdi mdi-delete mdi-24px"></span>
           <span class="mdi mdi-delete-empty mdi-24px"></span>
           <span><i class="fa-solid fa-trash"></i></span>
         </button>
+      <?php } ?>
         <?php endforeach; ?>
-      </li>
-
-      <li>Things I want to eat - <a href="edit-item.php"><i class="fa-solid fa-pen-to-square"></i></a>
-        <button class="btn btn-delete">
-          <span class="mdi mdi-delete mdi-24px"></span>
-          <span class="mdi mdi-delete-empty mdi-24px"></span>
-          <span><i class="fa-solid fa-trash"></i></span>
-        </button>
       </li>
     </ul>
     <h2>Add New Entry:</h2>
-    <form action="#" method="post">
-      <div>
-        <label for="list_name">List Name:</label>
-        <input type="text" id="list_name" name="list_name" required>
-      </div>
-      <div>
-        <label for="list_description">List Description:</label>
-        <textarea id="list_description" name="list_description" required></textarea>
-      </div>
-      <div>
-        <label for="public_view">Make List Public?:</label>
-        <input type="checkbox" id="public_view" name="public_view">
-      </div>
-      <input type="submit" value="Make List">
+    <form method="post" action="">
+    <div>
+          <label for="title">Title:</label>
+          <input type="text" id="title" name="title" value="<?= $title ?>">
+          <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+        </div>
+        <div>
+          <label for="description">Description:</label>
+          <textarea id="description" name="description" ><?= $description ?></textarea>
+          <span class="error <?= !isset($errors['description']) ? 'hidden' : '' ?>">Please Describe Your List.</span>
+        </div>
+        <div>
+          <label for="public_view">Make List Public?:</label>
+          <input type="hidden" id="public_view" name="public_view" value="Private">
+          <input type="checkbox" id="public_view" name="public_view" value="Public" checked>
+        </div>
+      </fieldset>
+      <button id="submit" name="submit">Make List</button>
     </form>
   </main>
   <?php include './includes/footer.php' ?>
