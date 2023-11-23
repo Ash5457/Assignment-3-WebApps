@@ -1,3 +1,26 @@
+<?php
+require_once "includes/library.php";
+$search = $_POST['search'] ?? "";
+$errors = array();
+
+if(isset($_POST['submit'])){
+
+  $search = strip_tags($search);
+  if($search == ""){
+    $errors['search'] = true;
+  }
+
+  if (!count($errors)){
+    $pdo = connectDB();
+
+    $query = "SELECT * FROM 3420_assg_lists WHERE title LIKE ? ";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$search]);
+  }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,7 +49,11 @@
           class="search_input"
           placeholder="Search for lists in the form"
           name="search_query" 
-        >
+          value="<?=$search?>"
+        />
+        <span class ="<?php echo isset($errors['search']) ? "" : "hidden"; ?>">
+      You must enter a search 
+    </span>
          <!--Added name attribute for the search input ^-->
         <button type="button" class="search_button">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -34,22 +61,26 @@
         <button type="button" class="feelin_lucky">Feelin Lucky?</button>
       </form>
     </div>
-    <?php
-    // Check if a search query is present in the URL
-    if (isset($_GET['search_query'])) {
-        // Perform your filtered query here
-        $search_query = $_GET['search_query'];
-        // You can modify the query based on your database structure and fields
-        // For example, if you are searching in a table named 'lists' and a column named 'list_name'
-        // $sql = "SELECT * FROM lists WHERE list_name LIKE '%$search_query%'";
-        
-        // Dummy search results for demonstration
-        $search_results = [
-            'Places I want to go',
-            'Things I want to eat',
-        ];
-      }
-    ?>
+
+    <div>
+
+    <?php if (isset($_POST['submit']) && !count($errors)) : ?>
+      <h2>Searching for matching lists <?= $search; ?></h2>
+      <?php if ($stmt->rowCount() <= 0) : ?>
+        <p>No Results found</p>
+        <?php else : ?>
+      <ul>
+        <?php foreach ($stmt as $row) :
+        ?>
+        <li>Lists: <?php echo "$row[title]"; ?> </li>
+        <?php endforeach ?>
+      </ul>
+      <?php endif ?>
+
+
+      <?php endif ?>
+    </div>
+
     <fieldset>
     <h2>Search Results</h2>
     <div>
