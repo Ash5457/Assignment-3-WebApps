@@ -4,7 +4,7 @@ $errors = array();
 
 // delcare defaults
 $name = $_POST['name'] ?? "";
-$gender = $_POST['gender'] ?? '0';
+$gender = $_POST['gender'] ?? "";
 $username = $_POST['username'] ?? "";
 $email = $_POST['email'] ?? "";
 $password = $_POST['password'] ?? "";
@@ -25,7 +25,7 @@ if (isset($_POST['submit'])) {
   if (strlen($name) === 0) {
     $errors['name'] = true;
   }
-  if ($gender === '0') {
+  if (strlen($gender) === 0) {
     $errors['gender'] = true;
   }
   if (strlen($username) === 0) {
@@ -97,7 +97,7 @@ if (isset($_POST['submit'])) {
     <?php include './includes/nav.php' ?>
   </header>
   <main>
-    <form id="register-form" method="post">
+    <form id="register-form" method="post" novalidate>
       <fieldset>
         <legend>Account Information</legend>
         <div>
@@ -109,10 +109,10 @@ if (isset($_POST['submit'])) {
           <label for="gender">Gender</label>
           <select name="gender" id="gender">
             <option value="">Please Choose One</option>
-            <option value="male"<?php if($gender == "1") echo "selected='selected'"; ?>>Male</option>
-            <option value="female"<?php if($gender == "2") echo "selected='selected'"; ?>>Female</option>
-            <option value="gnc"<?php if($gender == "3") echo "selected='selected'"; ?>>Gender Queer/Non-Conforming</option>
-            <option value="notsay"<?php if($gender == "4") echo "selected='selected'"; ?>>Prefer not to say</option>
+            <option value="male"<?php if($gender == "male") echo "selected='selected'"; ?>>Male</option>
+            <option value="female"<?php if($gender == "female") echo "selected='selected'"; ?>>Female</option>
+            <option value="gnc"<?php if($gender == "gnc") echo "selected='selected'"; ?>>Gender Queer/Non-Conforming</option>
+            <option value="notsay"<?php if($gender == "notsayy") echo "selected='selected'"; ?>>Prefer not to say</option>
           </select>
           <span class="error <?= !isset($errors['gender']) ? 'hidden' : '' ?>">Please Choose a Gender.</span>
         </div>
