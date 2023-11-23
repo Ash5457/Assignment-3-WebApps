@@ -5,7 +5,7 @@ session_start(); // Start the session
 
 // Check if the user is already logged in, if so, redirect to the Main Page
 if (isset($_SESSION['username'])) {
-    header("Location: main-page.php");
+    header("Location: index.php");
     exit();
 }
 
