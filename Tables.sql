@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `3420_assg_users`;
 DROP TABLE IF EXISTS `3420_assg_lists`;
+DROP TABLE IF EXISTS `3420_assg_users`;
 
 CREATE TABLE `3420_assg_users` (
     `id`            INT(10) NOT NULL AUTO_INCREMENT,
