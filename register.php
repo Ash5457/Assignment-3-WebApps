@@ -1,28 +1,39 @@
 <?php
 require './includes/library.php';
+// declare error array
+$errors = array();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // connect to db
     $pdo = connectDB();
-    $name = $_POST['name'];
-    $gender = $_POST['gender'];
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $confirmPassword = $_POST['confirm_password'];
+    // delcate defaults
+    $name = $_POST['name'] ?? "";
+    $gender = $_POST['gender'] ?? "";
+    $username = $_POST['username'] ?? "";
+    $email = $_POST['email'] ?? "";
+    $password = $_POST['password'] ?? "";
+    $confirmPassword = $_POST['confirm_password'] ?? "";
+    
+    $title = $_POST['list_name'] ?? "";
+    $description = $_POST['list_description'] ?? "";
+    $public = $_POST['public_view'] ?? "Private";
 
     // Validate password match
     if ($password !== $confirmPassword) {
-        $error_message = "Password and Confirm Password do not match.";
+      $errors['match'] = true;
+        //$error_message = "Password and Confirm Password do not match.";
     } else {
-        // Add your additional validation logic here
-
         // Check if username is unique
         $stmt = $pdo->prepare("SELECT id FROM 3420_assg_users WHERE username = ?");
         $stmt->execute([$username]);
 
         if ($stmt->rowCount() > 0) {
-            $error_message = "Username already exists. Please choose another one.";
-        } else {
+          $errors['unique'] = true;
+          //$error_message = "Username already exists. Please choose another one.";
+        } 
+      }
+
+        if (count($errors) === 0) {
             // Hash the password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
@@ -30,12 +41,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $pdo->prepare("INSERT INTO 3420_assg_users (name, gender, username, email, password) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$name, $gender, $username, $email, $hashedPassword]);
 
+            $stmt = $pdo->prepare("INSERT INTO 3420_assg_lists (title, description, publicity) VALUES (?, ?, ?)");
+            $stmt->execute([$title, $description, $public]);
+            
             // Redirect to login page
             header("Location: login.php");
             exit();
         }
-    }
-}
+      }
 ?>
 
 <!DOCTYPE html>
@@ -76,14 +89,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <option value="gnc">Gender Queer/Non-Conforming</option>
               <option value="notsay">Prefer not to say</option>
             </select>
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
           </div>
+
           <div class="container">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
           </div>
           <div>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
           </div>
 
           <div>
@@ -98,6 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               name="confirm_password"
               required
             >
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
           </div>
         </fieldset>
         <fieldset>
@@ -105,6 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div>
             <label for="list_name">List Name:</label>
             <input type="text" id="list_name" name="list_name" required>
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
           </div>
           <div>
             <label for="list_description">List Description:</label>
@@ -113,10 +133,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               name="list_description"
               required
             ></textarea>
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
           </div>
           <div>
             <label for="public_view">Make List Public?:</label>
             <input type="checkbox" id="public_view" name="public_view">
+            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
           </div>
         </fieldset>
         <input type="submit" value="Create Account">
