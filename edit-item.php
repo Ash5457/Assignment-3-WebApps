@@ -44,7 +44,7 @@ if (isset($_POST['submit'])) {
   if (strlen($details) === 0) {
     $errors['details'] = true;
   }
-
+if (isset($_FILES[$proof])){
 // Check for corruption
   if(!isset($_FILES[$proof]['error']) || is_array($_FILES[$proof]['error'])) {
     $errors['proof'] = true;
@@ -59,15 +59,15 @@ if (isset($_POST['submit'])) {
   } // Make sure file is within the desired size
   elseif ($_FILES[$proof]['size'] > 1500000) {
     $errors['proofsize'] = true;
-    }
+  }
 
     // Check the File type
-    if (exif_imagetype( $_FILES[$proof]['tmp_name']) != IMAGETYPE_JPEG
+  elseif (exif_imagetype( $_FILES[$proof]['tmp_name']) != IMAGETYPE_JPEG
      and exif_imagetype( $_FILES[$proof]['tmp_name']) != IMAGETYPE_PNG){
-
       $errors['prooftype'] = true;
-    }
-    if(is_uploaded_file($_FILES[$proof]['tmp_name'])){
+  }
+
+  elseif(is_uploaded_file($_FILES[$proof]['tmp_name'])){
       $query = "SELECT a.list_id
       FROM 3420_assg_lists AS a
       LEFT JOIN 3420_assg_users AS b ON b.id = a.user_id
@@ -78,7 +78,7 @@ if (isset($_POST['submit'])) {
       $uniqueID =  $uid_stmt->fetch();
       $path = '/uploads';
       $fileroot = "ListImage";
-    
+  }
       //get the original file name for extension, where 'fileToProcess' was the name of the
       //file upload form element
       $filename = $_FILES[$proof]['name'];
