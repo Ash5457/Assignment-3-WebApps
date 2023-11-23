@@ -1,4 +1,42 @@
+<?php
+require './includes/library.php';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $pdo = connectDB();
+    $name = $_POST['name'];
+    $gender = $_POST['gender'];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $confirmPassword = $_POST['confirm_password'];
+
+    // Validate password match
+    if ($password !== $confirmPassword) {
+        $error_message = "Password and Confirm Password do not match.";
+    } else {
+        // Add your additional validation logic here
+
+        // Check if username is unique
+        $stmt = $pdo->prepare("SELECT id FROM 3420_assg_users WHERE username = ?");
+        $stmt->execute([$username]);
+
+        if ($stmt->rowCount() > 0) {
+            $error_message = "Username already exists. Please choose another one.";
+        } else {
+            // Hash the password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            // Insert user data into the database
+            $stmt = $pdo->prepare("INSERT INTO 3420_assg_users (name, gender, username, email, password) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $gender, $username, $email, $hashedPassword]);
+
+            // Redirect to login page
+            header("Location: login.php");
+            exit();
+        }
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +60,7 @@
       <?php include './includes/nav.php' ?>
     </header>
     <main>
-      <form action="create-account.php" method="post">
+      <form action="" method="post">
         <fieldset>
           <legend>Account Information</legend>
           <div>
@@ -87,33 +125,3 @@
     <?php include './includes/footer.php' ?>
   </body>
 </html>
-
-<?php
-require './includes/library.php';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $pdo = connectDB();
-    $name = $_POST['name'];
-    $gender = $_POST['gender'];
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    // Add your validation logic here
-
-    // Check if username is unique
-    $stmt = $pdo->prepare("SELECT id FROM 3420_assg_users WHERE username = ?");
-    $stmt->execute([$username]);
-
-    if ($stmt->rowCount() > 0) {
-        $error_message = "Username already exists. Please choose another one.";
-    } else {
-        // Insert user data into the database
-        $stmt = $pdo->prepare("INSERT INTO 3420_assg_users (name, gender, username, email, password) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $gender, $username, $email, $password]);
-
-        // Redirect to login page
-        header("Location: login.php");
-        exit();
-    }
-}
