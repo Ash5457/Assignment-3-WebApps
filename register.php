@@ -1,17 +1,20 @@
 <?php
+
 // declare error array
 $errors = array();
 
+
 // delcare defaults
-$name = $_POST['name'] ?? "";
-$gender = $_POST['gender'] ?? "";
-$username = $_POST['username'] ?? "";
-$email = $_POST['email'] ?? "";
-$password = $_POST['password'] ?? "";
-$confirmPassword = $_POST['confirm_password'] ?? "";
-$title = $_POST['title'] ?? "";
-$description = $_POST['description'] ?? "";
-$public = $_POST['public_view'] ?? "Private";
+$name               = $_POST['name'] ?? "";
+$gender             = $_POST['gender'] ?? "";
+$username           = $_POST['username'] ?? "";
+$email              = $_POST['email'] ?? "";
+$password           = $_POST['password'] ?? "";
+$confirmPassword    = $_POST['confirm_password'] ?? "";
+$title              = $_POST['title'] ?? "";
+$description        = $_POST['description'] ?? "";
+$public             = $_POST['public_view'] ?? 'Public';
+
 
 
 //Include library and connect to DB
@@ -21,53 +24,67 @@ $pdo = connectDB();
 
 //validate the form
 if (isset($_POST['submit'])) {
+  echo 'the form was considered to have hit the submit button'; 
   //basic form validation
-  if (strlen($name) === 0) {
+  if (strlen($name) == 0) {
     $errors['name'] = true;
+    echo 'name not set';
   }
-  if (strlen($gender) === 0) {
+  if (strlen($gender) == 0) {
     $errors['gender'] = true;
+    echo 'no gender set';
   }
-  if (strlen($username) === 0) {
+  if (strlen($username) == 0) {
     $errors['username'] = true;
-  }
-  if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-    $errors['email'] = true;
-  }
-  if (strlen($password) === 0) {
-    $errors['password'] = true;
-  }
-  if (strlen($title) === 0) {
-    $errors['title'] = true;
-  }
-  if (strlen($description) === 0) {
-    $errors['description'] = true;
-  }
-
-  // Validate password match
-  if ($password !== $confirmPassword) {
-    $errors['match'] = true;
-  } else {
+    echo 'no username';
+  }else {
     // Check if username is unique
-    $stmt = $pdo->prepare("SELECT id FROM 3420_assg_users WHERE username = ?");
+    $query ="SELECT id FROM 3420_assg_users WHERE username = ?";
+    $stmt = $pdo->prepare($query);
     $stmt->execute([$username]);
 
     if ($stmt->rowCount() > 0) {
       $errors['unique'] = true;
+      $errors['username'] = false;
+      echo 'user exists';
     }
+  }
+  if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+    $errors['email'] = true;
+    echo 'email thingy';
+  }
+  if (strlen($password) == 0) {
+    $errors['password'] = true;
+    echo 'no password sent';
+  }
+   // Validate password match
+   if ($password !== $confirmPassword) {
+    $errors['match'] = true;
+    echo 'the first error exists';
+  }
+  if (strlen($title) == 0) {
+    $errors['title'] = true;
+    echo 'title not picked';
+  }
+  if (strlen($description) == 0) {
+    $errors['description'] = true;
+    echo 'descript not set';
   }
 
 
-  if (count($errors) === 0) {
+  if (count($errors) === 0) { 
+    echo 'there were no errors!!';
     // Hash the password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Insert user data into the database
-    $stmt = $pdo->prepare("INSERT INTO 3420_assg_users (`name`, `gender`, `username`, `email`, `password`) VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([$name, $gender, $username, $email, $hashedPassword]);
+    $userquery = "INSERT INTO 3420_assg_users (`name`, `gender`, `username`, `email`, `password`) VALUES (?, ?, ?, ?, ?)";
+    $users_stmt = $pdo->prepare($userquery);
+    $users_stmt->execute([$name, $gender, $username, $email, $hashedPassword]);
 
-    $stmt = $pdo->prepare("INSERT INTO 3420_assg_lists (`title`, `description`, `publicity`) VALUES (?, ?, ?)");
-    $stmt->execute([$title, $description, $public]);
+    $listquery = "INSERT INTO 3420_assg_lists (`title`, `description`, `publicity`) VALUES (?, ?, ?)";
+    $list_stmt = $pdo->prepare($listquery);
+    $list_stmt->execute([$title, $description, $public]);
 
     // Redirect to login page
     header("Location: login.php");
@@ -97,7 +114,7 @@ if (isset($_POST['submit'])) {
     <?php include './includes/nav.php' ?>
   </header>
   <main>
-    <form id="register-form" method="post" novalidate>
+    <form method="post" action="">
       <fieldset>
         <legend>Account Information</legend>
         <div>
@@ -141,7 +158,7 @@ if (isset($_POST['submit'])) {
         </div>
       </fieldset>
       <fieldset>
-        <legend>Create your first List</legend>
+        <legend>Create Your First List</legend>
         <div>
           <label for="title">Title:</label>
           <input type="text" id="title" name="title" value="<?= $title ?>">
@@ -149,7 +166,7 @@ if (isset($_POST['submit'])) {
         </div>
         <div>
           <label for="description">Description:</label>
-          <textarea id="description" name="description"value="<?= $description ?>"></textarea>
+          <textarea id="description" name="description" ><?= $description ?></textarea>
           <span class="error <?= !isset($errors['description']) ? 'hidden' : '' ?>">Please Describe Your List.</span>
         </div>
         <div>
@@ -158,7 +175,7 @@ if (isset($_POST['submit'])) {
           <input type="checkbox" id="public_view" name="public_view" value="Public" checked>
         </div>
       </fieldset>
-      <input type="submit" value="Create Account">
+      <button id="submit" name="submit">Register</button>
     </form>
   </main>
   <?php include './includes/footer.php' ?>
