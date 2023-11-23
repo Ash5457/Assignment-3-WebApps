@@ -44,8 +44,8 @@ if (isset($_POST['submit'])) {
   if (strlen($details) === 0) {
     $errors['details'] = true;
   }
-if (isset($_FILES[$proof])){
-// Check for corruption
+  if (isset($_FILES[$proof])){
+  // Check for corruption
   if(!isset($_FILES[$proof]['error']) || is_array($_FILES[$proof]['error'])) {
     $errors['proof'] = true;
   }
