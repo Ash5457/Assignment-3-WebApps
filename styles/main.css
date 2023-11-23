@@ -129,7 +129,7 @@ input[type="file"] {
   margin-bottom: 0.5em;
 }
 
-input[type="submit"] {
+input[type="submit"], button[id="submit"] {
   background-color: #0070c0;
   color: white;
   padding: 0.5em 2.4em;
@@ -139,7 +139,7 @@ input[type="submit"] {
   margin-top: 0.5em;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, button[id="submit"]:hover {
   background-color: #005090;
   transform: scale(1.2);
 }
@@ -307,9 +307,11 @@ form.search-form {
   border: 0.25em solid #ccc;
   border-radius: 0.15em;
 }
-
+.hidden {
+  display: none;
+}
 /* Error Message*/
-span.error {
+.error {
   display: inline-block;
   color: palevioletred;
   font-style: italic;
