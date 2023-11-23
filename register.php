@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -85,3 +87,33 @@
     <?php include './includes/footer.php' ?>
   </body>
 </html>
+
+<?php
+require './includes/library.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $pdo = connectDB();
+    $name = $_POST['name'];
+    $gender = $_POST['gender'];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    // Add your validation logic here
+
+    // Check if username is unique
+    $stmt = $pdo->prepare("SELECT id FROM 3420_assg_users WHERE username = ?");
+    $stmt->execute([$username]);
+
+    if ($stmt->rowCount() > 0) {
+        $error_message = "Username already exists. Please choose another one.";
+    } else {
+        // Insert user data into the database
+        $stmt = $pdo->prepare("INSERT INTO 3420_assg_users (name, gender, username, email, password) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $gender, $username, $email, $password]);
+
+        // Redirect to login page
+        header("Location: login.php");
+        exit();
+    }
+}

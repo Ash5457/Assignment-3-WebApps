@@ -1,5 +1,6 @@
 <!--PHP section-->
 <?php
+require './includes/library.php';
 session_start(); // Start the session
 
 // Check if the user is already logged in, if so, redirect to the Main Page
@@ -17,34 +18,39 @@ if (isset($_COOKIE['remember_me'])) {
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate user credentials against the database (replace this with your actual validation logic)
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+  $pdo = connectDB();
+  $username = $_POST['username'];
+  $password = $_POST['password'];
+  $rememberMe = isset($_POST['remember_me']) ? $_POST['remember_me'] : false;
 
-    // Example validation logic (replace this with your actual validation logic)
-    // $isValid = validateUser($username, $password);
-    // For simplicity, we'll assume the validation is successful
+  // Fetch user data from the database
+  $stmt = $pdo->prepare("SELECT id, password FROM 3420_assg_users WHERE username = ?");
+  $stmt->execute([$username]);
+  $userData = $stmt->fetch();
 
-    // Dummy validation for demonstration purposes
-    $isValid = true;
+  // Verify password
+  if ($userData && password_verify($password, $userData['password'])) {
+      // Password is correct, start a new session
+      session_start();
 
-    if ($isValid) {
-        // Set session variables
-        $_SESSION['username'] = $username;
-        $_SESSION['userID'] = 1; // Replace with the actual user ID from the database
+      // Store user data in session variables
+      $_SESSION['username'] = $username;
+      $_SESSION['user_id'] = $userData['id'];
 
-        // Check if "remember me" is checked, if yes, create a cookie
-        if (isset($_POST['remember_me'])) {
-            setcookie('remember_me', $username, time() + (86400 * 30), "/"); // 30 days
-        }
+      // Create a cookie if "remember me" is checked
+      if ($rememberMe) {
+          setcookie('remember_me', $username, time() + (86400 * 30), "/"); // 30 days
+      } else {
+          // If "remember me" is not checked, clear the cookie
+          setcookie('remember_me', '', time() - 3600, "/");
+      }
 
-        // Redirect to the Main Page
-        header("Location: main-page.php");
-        exit();
-    } else {
-        // Handle invalid credentials (display an error message, redirect, etc.)
-        $error_message = "Invalid username or password";
-    }
+      // Redirect to the Main Page
+      header("Location: index.php");
+      exit();
+  } else {
+      $error_message = "Invalid username or password";
+  }
 }
 ?>
 
