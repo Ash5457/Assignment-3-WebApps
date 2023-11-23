@@ -82,7 +82,7 @@ if (isset($_POST['submit'])) {
     $users_stmt = $pdo->prepare($userquery);
     $users_stmt->execute([$name, $gender, $username, $email, $hashedPassword]);
 
-    $get_uid = "SELECT user_id FROM 3420_assg_users WHERE username = ?";
+    $get_uid = "SELECT id FROM 3420_assg_users WHERE username = ?";
     $uid = $pdo->prepare($get_uid);
     $uid->execute([$username]);
 
