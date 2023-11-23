@@ -5,6 +5,7 @@
         <?php
         if (isset($_SESSION['username'])) {
             // Display user-specific links when logged in
+            echo '<li><a href="./logout.php"><i class="fa-solid fa-right-from-bracket"></i></a></li>';
             echo '<li><a href="./edit-account.php"><i class="fa-solid fa-user-edit"></i></a></li>';
             echo '<li><a href="./delete-account.php"><i class="fa-solid fa-user-times"></i></a></li>';
         } else {
