@@ -18,6 +18,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['list_description'] ?? "";
     $public = $_POST['public_view'] ?? "Private";
 
+    //basic form validation
+    if (strlen($name) === 0) {
+      $errors['name'] = true;
+    } 
+    if (strlen($gender) === 0) {
+      $errors['gender'] = true;
+    }
+    if (strlen($username) === 0) {
+      $errors['username'] = true;
+    }
+    if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+      $errors['email'] = true;
+    }
+    if (strlen($password) === 0) {
+      $errors['password'] = true;
+    }
+    if (strlen($title) === 0) {
+      $errors['title'] = true;
+    }
+    if (strlen($description) === 0) {
+      $errors['description'] = true;
+    }
+
     // Validate password match
     if ($password !== $confirmPassword) {
       $errors['match'] = true;
@@ -79,6 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div>
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
+            <span class="error <?= !isset($errors['name']) ? 'hidden' : '' ?>">Please Enter a Name.</span>
           </div>
           <div>
             <label for="gender">Gender</label>
@@ -89,24 +113,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <option value="gnc">Gender Queer/Non-Conforming</option>
               <option value="notsay">Prefer not to say</option>
             </select>
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+            <span class="error <?= !isset($errors['gender']) ? 'hidden' : '' ?>">Please Choose a Gender.</span>
           </div>
 
           <div class="container">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+            <span class="error <?= !isset($errors['username']) ? 'hidden' : '' ?>">Please Enter a Username.</span>
+            <span class="error <?= !isset($errors['unique']) ? 'hidden' : '' ?>">Invalid Username!</span>
           </div>
           <div>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+            <span class="error <?= !isset($errors['email']) ? 'hidden' : '' ?>">Enter a Valid Email.</span>
           </div>
 
           <div>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
+            <span class="error <?= !isset($errors['password']) ? 'hidden' : '' ?>">Please Enter a Password.</span>
           </div>
           <div>
             <label for="confirm_password">Confirm Password:</label>
@@ -116,30 +141,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               name="confirm_password"
               required
             >
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+            <span class="error <?= !isset($errors['match']) ? 'hidden' : '' ?>">Passwords Do Not Match.</span>
           </div>
         </fieldset>
         <fieldset>
           <legend>Create your first List</legend>
           <div>
-            <label for="list_name">List Name:</label>
-            <input type="text" id="list_name" name="list_name" required>
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
-          </div>
+          <label for="title">Title:</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value="Bucket List Item Title"
+          >
+          <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+        </div>
+        <div>
+          <label for="description">Description:</label>
+          <textarea id="description" name="description"></textarea>
+          <span class="error <?= !isset($errors['description']) ? 'hidden' : '' ?>">Please Describe Your List.</span>
+        </div>
           <div>
-            <label for="list_description">List Description:</label>
-            <textarea
-              id="list_description"
-              name="list_description"
-              required
-            ></textarea>
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
-          </div>
-          <div>
-            <label for="public_view">Make List Public?:</label>
-            <input type="checkbox" id="public_view" name="public_view">
-            <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
-          </div>
+          <label for="public_view">Make List Public?:</label>
+          <input type="hidden" id="public_view" name="public_view" value="Private">
+          <input type="checkbox" id="public_view" name="public_view" value ="Public" checked>
+        </div>
         </fieldset>
         <input type="submit" value="Create Account">
       </form>
