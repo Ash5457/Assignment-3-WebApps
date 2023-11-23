@@ -10,10 +10,10 @@
 </head>
 
 <body>
-
-  <div>
+  <header>
     <?php include './includes/nav.php' ?>
-
+  </header>
+  <div>
     <main>
       <p>Thank you for for using our site, see you next time!.</p>
     </main>
