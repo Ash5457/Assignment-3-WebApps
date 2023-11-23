@@ -24,19 +24,15 @@ $pdo = connectDB();
 
 //validate the form
 if (isset($_POST['submit'])) {
-  echo 'the form was considered to have hit the submit button'; 
   //basic form validation
   if (strlen($name) == 0) {
     $errors['name'] = true;
-    echo 'name not set';
   }
   if (strlen($gender) == 0) {
     $errors['gender'] = true;
-    echo 'no gender set';
   }
   if (strlen($username) == 0) {
     $errors['username'] = true;
-    echo 'no username';
   }else {
     // Check if username is unique
     $query ="SELECT id FROM 3420_assg_users WHERE username = ?";
@@ -44,36 +40,29 @@ if (isset($_POST['submit'])) {
     $stmt->execute([$username]);
 
     if ($stmt->rowCount() > 0) {
+      $errors['username'] = null;
       $errors['unique'] = true;
-      $errors['username'] = false;
-      echo 'user exists';
     }
   }
   if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
     $errors['email'] = true;
-    echo 'email thingy';
   }
   if (strlen($password) == 0) {
     $errors['password'] = true;
-    echo 'no password sent';
   }
    // Validate password match
    if ($password !== $confirmPassword) {
     $errors['match'] = true;
-    echo 'the first error exists';
   }
   if (strlen($title) == 0) {
     $errors['title'] = true;
-    echo 'title not picked';
   }
   if (strlen($description) == 0) {
     $errors['description'] = true;
-    echo 'descript not set';
   }
 
 
   if (count($errors) === 0) { 
-    echo 'there were no errors!!';
     // Hash the password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
