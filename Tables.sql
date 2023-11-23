@@ -1,9 +1,12 @@
-DROP TABLE IF EXISTS `3420_assg_users`;
 DROP TABLE IF EXISTS `3420_assg_lists`;
+DROP TABLE IF EXISTS `3420_assg_users`;
 
 CREATE TABLE `3420_assg_users` (
     `id`            INT(10) NOT NULL AUTO_INCREMENT,
+    `name`          TEXT NOT NULL,
+    `gender`        ENUM('male', 'female', 'gnc', 'notsay') NOT NULL,
     `username`      VARCHAR(64) NOT NULL UNIQUE,
+    `email`         TEXT NOT NULL,
     `password`      TEXT NOT NULL,
     PRIMARY KEY (`id`)
 );
