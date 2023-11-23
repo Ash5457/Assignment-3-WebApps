@@ -309,7 +309,7 @@ form.search-form {
 }
 
 /* Error Message*/
-.error {
+span.error {
   display: inline-block;
   color: palevioletred;
   font-style: italic;

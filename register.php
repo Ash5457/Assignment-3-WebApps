@@ -4,13 +4,13 @@ $errors = array();
 
 // delcare defaults
 $name = $_POST['name'] ?? "";
-$gender = $_POST['gender'] ?? "";
+$gender = $_POST['gender'] ?? '0';
 $username = $_POST['username'] ?? "";
 $email = $_POST['email'] ?? "";
 $password = $_POST['password'] ?? "";
 $confirmPassword = $_POST['confirm_password'] ?? "";
-$title = $_POST['list_name'] ?? "";
-$description = $_POST['list_description'] ?? "";
+$title = $_POST['title'] ?? "";
+$description = $_POST['description'] ?? "";
 $public = $_POST['public_view'] ?? "Private";
 
 
@@ -25,7 +25,7 @@ if (isset($_POST['submit'])) {
   if (strlen($name) === 0) {
     $errors['name'] = true;
   }
-  if (strlen($gender) === 0) {
+  if ($gender === '0') {
     $errors['gender'] = true;
   }
   if (strlen($username) === 0) {
@@ -57,15 +57,16 @@ if (isset($_POST['submit'])) {
     }
   }
 
+
   if (count($errors) === 0) {
     // Hash the password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Insert user data into the database
-    $stmt = $pdo->prepare("INSERT INTO 3420_assg_users (name, gender, username, email, password) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO 3420_assg_users (`name`, `gender`, `username`, `email`, `password`) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$name, $gender, $username, $email, $hashedPassword]);
 
-    $stmt = $pdo->prepare("INSERT INTO 3420_assg_lists (title, description, publicity) VALUES (?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO 3420_assg_lists (`title`, `description`, `publicity`) VALUES (?, ?, ?)");
     $stmt->execute([$title, $description, $public]);
 
     // Redirect to login page
@@ -96,46 +97,46 @@ if (isset($_POST['submit'])) {
     <?php include './includes/nav.php' ?>
   </header>
   <main>
-    <form action="" method="post">
+    <form id="register-form" method="post">
       <fieldset>
         <legend>Account Information</legend>
         <div>
           <label for="name">Name:</label>
-          <input type="text" id="name" name="name" required>
+          <input type="text" id="name" name="name" value="<?= $name ?>">
+          <span class="error <?= !isset($errors['name']) ? 'hidden' : '' ?>">Please Enter a Name.</span>
         </div>
-        <span class="error <?= !isset($errors['name']) ? 'hidden' : '' ?>">Please Enter a Name.</span>
         <div>
           <label for="gender">Gender</label>
-          <select name="gender" id="gender" required>
+          <select name="gender" id="gender">
             <option value="">Please Choose One</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="gnc">Gender Queer/Non-Conforming</option>
-            <option value="notsay">Prefer not to say</option>
+            <option value="male"<?php if($gender == "1") echo "selected='selected'"; ?>>Male</option>
+            <option value="female"<?php if($gender == "2") echo "selected='selected'"; ?>>Female</option>
+            <option value="gnc"<?php if($gender == "3") echo "selected='selected'"; ?>>Gender Queer/Non-Conforming</option>
+            <option value="notsay"<?php if($gender == "4") echo "selected='selected'"; ?>>Prefer not to say</option>
           </select>
           <span class="error <?= !isset($errors['gender']) ? 'hidden' : '' ?>">Please Choose a Gender.</span>
         </div>
 
         <div class="container">
           <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required>
+          <input type="text" id="username" name="username" value="<?= $username ?>" >
           <span class="error <?= !isset($errors['username']) ? 'hidden' : '' ?>">Please Enter a Username.</span>
           <span class="error <?= !isset($errors['unique']) ? 'hidden' : '' ?>">Invalid Username!</span>
         </div>
         <div>
           <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required>
+          <input type="email" id="email" name="email" value="<?= $email ?>" >
           <span class="error <?= !isset($errors['email']) ? 'hidden' : '' ?>">Enter a Valid Email.</span>
         </div>
 
         <div>
           <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required>
+          <input type="password" id="password" name="password" value="<?= $password ?>" >
           <span class="error <?= !isset($errors['password']) ? 'hidden' : '' ?>">Please Enter a Password.</span>
         </div>
         <div>
           <label for="confirm_password">Confirm Password:</label>
-          <input type="password" id="confirm_password" name="confirm_password" required>
+          <input type="password" id="confirm_password" name="confirm_password" value="<?= $confirmPassword ?>">
           <span class="error <?= !isset($errors['match']) ? 'hidden' : '' ?>">Passwords Do Not Match.</span>
         </div>
       </fieldset>
@@ -143,12 +144,12 @@ if (isset($_POST['submit'])) {
         <legend>Create your first List</legend>
         <div>
           <label for="title">Title:</label>
-          <input type="text" id="title" name="title" value="Bucket List Item Title">
+          <input type="text" id="title" name="title" value="<?= $title ?>">
           <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
         </div>
         <div>
           <label for="description">Description:</label>
-          <textarea id="description" name="description"></textarea>
+          <textarea id="description" name="description"value="<?= $description ?>"></textarea>
           <span class="error <?= !isset($errors['description']) ? 'hidden' : '' ?>">Please Describe Your List.</span>
         </div>
         <div>
