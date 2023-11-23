@@ -85,11 +85,12 @@ if (isset($_POST['submit'])) {
     $get_uid = "SELECT `id` FROM `3420_assg_users` WHERE `3420_assg_users`.`username` = ?";
     $uid = $pdo->prepare($get_uid);
     $uid->execute([$username]);
-    $uid->fetch();
-
+    $result = $uid->fetch(PDO::FETCH_ASSOC);
+    $userid = $result['id'];
+    echo $userid;
     $listquery = "INSERT INTO 3420_assg_lists (`user_id`, `title`, `description`, `publicity`) VALUES (?, ?, ?, ?)";
     $list_stmt = $pdo->prepare($listquery);
-    $list_stmt->execute([$uid, $title, $description, $public]);
+    $list_stmt->execute([$userid, $title, $description, $public]);
 
     // Redirect to login page
     header("Location: login.php");
