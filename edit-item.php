@@ -147,15 +147,15 @@ if (isset($_POST['submit'])) {
     // Edit the list in Database`:
     if ($oldfile != true){
     if(empty($comp_date)){$comp_date = "0000:00:00";} // if statement to set a default for database
-      $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `image_url`= ?, `completion_date` = ?, `publicity` = ?
+      $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `image_url`= ?, `rating` = ?, `completion_date` = ?, `publicity` = ?
       WHERE `list_id` = ? AND `user_id` = ?";
       $edit_stmt = $pdo->prepare($query);
-      $edit_stmt->execute([$title, $description, $status, $details, $filename, $comp_date, $public, $list_id, $userid]);}
+      $edit_stmt->execute([$title, $description, $status, $details, $filename, $rating, $comp_date, $public, $list_id, $userid]);}
       else{
-        $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `completion_date` = ?, `publicity` = ?
+        $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `rating` = ?, `completion_date` = ?, `publicity` = ?
       WHERE `list_id` = ? AND `user_id` = ?";
       $edit_stmt = $pdo->prepare($query);
-      $edit_stmt->execute([$title, $description, $status, $details, $comp_date, $public, $list_id, $userid]);
+      $edit_stmt->execute([$title, $description, $status, $details, $rating, $comp_date, $public, $list_id, $userid]);
     }
 
    // Redirect:
