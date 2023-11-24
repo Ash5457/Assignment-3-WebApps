@@ -19,6 +19,7 @@ CREATE TABLE `3420_assg_lists` (
     `status`            ENUM('', 'o', 'p', 'c'),
     `details`           TEXT,
     `image_url`         TEXT,
+    `rating`            INT,
     `completion_date`   DATE,
     `publicity`         TEXT NOT NULL,
     
