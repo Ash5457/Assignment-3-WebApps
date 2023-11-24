@@ -27,6 +27,7 @@
             type="text"
             id="usernameOrEmail"
             name="usernameOrEmail"
+            value="<?php echo isset($_POST['usernameOrEmail']) ? htmlspecialchars($_POST['usernameOrEmail']) : ''; ?>"
             required
           >
         </div>

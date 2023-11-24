@@ -88,24 +88,24 @@ $user = $stmtUser->fetch();
 
                 <div>
                     <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+                    <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>" required>
                 </div>
                 <div>
                     <label for="gender">Gender</label>
                     <select name="gender" id="gender" required>
-                        <option value="male" <?php echo ($user['gender'] === 'male') ? 'selected' : ''; ?>>Male</option>
-                        <option value="female" <?php echo ($user['gender'] === 'female') ? 'selected' : ''; ?>>Female</option>
-                        <option value="gnc" <?php echo ($user['gender'] === 'gnc') ? 'selected' : ''; ?>>Gender Queer/Non-Conforming</option>
-                        <option value="notsay" <?php echo ($user['gender'] === 'notsay') ? 'selected' : ''; ?>>Prefer not to say</option>
+                        <option value="male" <?php echo ($gender === 'male') ? 'selected' : ''; ?>>Male</option>
+                        <option value="female" <?php echo ($gender === 'female') ? 'selected' : ''; ?>>Female</option>
+                        <option value="gnc" <?php echo ($gender === 'gnc') ? 'selected' : ''; ?>>Gender Queer/Non-Conforming</option>
+                        <option value="notsay" <?php echo ($gender === 'notsay') ? 'selected' : ''; ?>>Prefer not to say</option>
                     </select>
                 </div>
                 <div class="container">
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" value="<?php echo $user['username']; ?>" required>
+                    <input type="text" id="username" name="username" value="<?php echo $username; ?>" required>
                 </div>
                 <div>
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<?php echo $user['email']; ?>" required>
+                    <input type="email" id="email" name="email" value="<?php echo $email; ?>" required>
                 </div>
 
                 <div>

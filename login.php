@@ -94,6 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               maxlength="32"
               placeholder="ex. JohnDoe123"
               required
+              value="<?php echo htmlspecialchars($username); ?>"
             >
           </div>
           <div>
@@ -103,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           <div>
             <label for="remember_me">Remember me:</label>
-            <input type="checkbox" id="remember_me" name="remember_me">
+            <input type="checkbox" id="remember_me" name="remember_me"<?php echo $rememberMe ? 'checked' : ''; ?>>
           </div>
         </fieldset>
         <div>
