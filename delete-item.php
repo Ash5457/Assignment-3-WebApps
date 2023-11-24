@@ -13,6 +13,18 @@ if(isset($_GET['id'])){
     $list_id = $_GET['id'];
 }
   $userid = $_SESSION['user_id'];
+
+$pdo = connectDB();
+// Check if the user has confirmed the account deletion
+if (isset($_POST['confirmDelete'])) {
+    // Delete all data associated with the user
+    $stmtDeleteLists = $pdo->prepare("DELETE FROM 3420_assg_lists WHERE user_id = ? AND list_id = ?");
+    $stmtDeleteLists->execute([$userid, $list_id]);
+
+// Redirect to login
+header("Location: index.php");
+exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +33,7 @@ if(isset($_GET['id'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/05ad49203b.js" crossorigin="anonymous"></script>
-    <title>Edit Successful!</title>
+    <title>Delete Item</title>
     <!-- include CSS-->
     <link rel="stylesheet" href="styles/main.css">
     <script defer src="js/scripts.js"></script>
@@ -29,14 +41,17 @@ if(isset($_GET['id'])){
 <body>
     <header>
         <!--This will be the main heading of the page so users know what page they're on-->
-        <h1>Item Edited!</h1>
+        <h1>Delete Item</h1>
         <?php include './includes/nav.php' ?>
     </header>
     <main>
         <form action="delete-account.php" method="post">
             <fieldset>
-                <legend>Congratulations!</legend>
-                <p>Your Item has been edited Successfully! You may see it <a href="view-item.php?id=<?php echo $list_id; ?>">Here</a></p>
+                <legend>Confirmation</legend>
+                <p>Are you sure you want to delete your Item? This action cannot be undone.</p>
+                <div>
+                    <button type="submit" name="confirmDelete" class="big-button">Yes, I'm sure. Delete my Item</button>
+                </div>
             </fieldset>
         </form>
     </main>
