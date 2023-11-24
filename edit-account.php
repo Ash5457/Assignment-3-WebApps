@@ -1,3 +1,8 @@
+
+<?php
+session_start(); // Start the session
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -23,21 +28,23 @@
       <?php
       require './includes/library.php';
 
-      // Assuming you have a function to get the user data by user ID
+      
       $pdo = connectDB();
-      $user_id = $_SESSION['user_id'];
-      $stmt = $pdo->prepare("SELECT * FROM 3420_assg_users WHERE id = ?");
-      $stmt->execute([$user_id]);
-      $user = $stmt->fetch();
+      // Check if the user is logged in
+      if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+        $stmt = $pdo->prepare("SELECT * FROM 3420_assg_users WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
 
-      if ($user) {
+        if ($user) {
       ?>
         <form action="update-account.php" method="post">
           <fieldset>
             <legend>Account Information</legend>
             <div>
               <label for="name">Name:</label>
-              <input type="text" id="name" name="name" value="<?php echo $user['name']; ?>" required>
+              <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
             </div>
             <div>
               <label for="gender">Gender</label>
@@ -62,13 +69,20 @@
               <input type="password" id="password" name="password">
               <span>Leave blank to keep the current password.</span>
             </div>
+            <div>
+             <label for="confirm_password">Confirm Password:</label>
+             <input type="password" id="confirm_password" name="confirm_password">
+            </div>
           </fieldset>
 
           <input type="submit" value="Update Account">
         </form>
       <?php
+        } else {
+          echo "User not found.";
+        }
       } else {
-        echo "User not found.";
+        echo "User not logged in.";
       }
       ?>
     </main>

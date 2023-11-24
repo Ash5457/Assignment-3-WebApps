@@ -1,25 +1,35 @@
+
+<?php
+// Start or resume the current session
+session_start();
+
+// Destroy the session
+session_destroy();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="./styles/main.css" />
-  <title>You Have Successfully Logged Out!</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/05ad49203b.js" crossorigin="anonymous"></script>
+    <title>Delete Account</title>
+    <!-- include CSS-->
+    <link rel="stylesheet" href="styles/main.css">
+    <script defer src="js/scripts.js"></script>
 </head>
-
 <body>
+
   <header>
-    <?php include './includes/nav.php' ?>
+    <!-- This will be the main heading of the page so users know what page they're on -->
+    <h1>You Have Successfully Logged Out</h1>
+    <?php include './includes/nav.php'; ?>
   </header>
-  <div>
-    <main>
-      <p>Thank you for for using our site, see you next time!.</p>
-    </main>
-  </div>
 
-  <?php include './includes/footer.php' ?>
+  <main>
+      <p>Thank you for using our site. You have successfully logged out!</p>
+  </main>
+
+  <?php include './includes/footer.php'; ?>
 </body>
-
 </html>
