@@ -1,25 +1,45 @@
+
+<?php
+require './includes/library.php';
+
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+if(isset($_GET['id'])){
+    $list_id = $_GET['id'];
+}
+  $userid = $_SESSION['user_id'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="./styles/main.css" />
-  <title>Your List Item Has Been Edited!</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/05ad49203b.js" crossorigin="anonymous"></script>
+    <title>Edit Successful!</title>
+    <!-- include CSS-->
+    <link rel="stylesheet" href="styles/main.css">
+    <script defer src="js/scripts.js"></script>
 </head>
-
 <body>
-
-  <div>
-    <?php include './includes/nav.php' ?>
-
+    <header>
+        <!--This will be the main heading of the page so users know what page they're on-->
+        <h1>Item Edited!</h1>
+        <?php include './includes/nav.php' ?>
+    </header>
     <main>
-      <p>You can see your updated entry <a href="view-item.php">Here</a></p>
+        <form action="delete-account.php" method="post">
+            <fieldset>
+                <legend>Congratulations!</legend>
+                <p>Your Item has been edited Successfully! You may see it <a href="view-item.php?id=<?php echo $list_id; ?>">Here</a></p>
+            </fieldset>
+        </form>
     </main>
-  </div>
-
-  <?php include './includes/footer.php' ?>
+    <?php include './includes/footer.php' ?>
 </body>
-
 </html>
