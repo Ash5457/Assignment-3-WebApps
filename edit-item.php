@@ -31,8 +31,15 @@ $public             = $_POST['public_view'] ?? 'Public';
 require './includes/library.php';
 
 $pdo = connectDB();
+$check = "SELECT user_id FROM 3420_assg_lists WHERE list_id = ?";
+$checkownership = $pdo->prepare($check);
+$checkownership->execute([$list_id]);
+$result = $checkownership->fetch(PDO::FETCH_ASSOC);
+if ($result['user_id'] != $userid){
+  header("Location: index.php");
+}
+
 if (isset($_POST['submit'])) {
-  echo 'The form says submit was hit! ';
   if (strlen($title) == 0) {
     $errors['title'] = true;
   }
@@ -67,14 +74,6 @@ if (isset($_POST['submit'])) {
         $errors['proofsize'] = true;
     }
     elseif(is_uploaded_file($_FILES["proof"]['tmp_name'])){
-          $query = "SELECT a.list_id
-          FROM 3420_assg_lists AS a
-          LEFT JOIN 3420_assg_users AS b ON b.id = a.user_id
-          WHERE b.id = ? AND a.title = ?";
-          $uid_stmt = $pdo->prepare($query);
-          $uid_stmt->execute([$userid, $title]);
-    
-          $uniqueID =  $uid_stmt->fetch();
           $path = '/uploads';
           $fileroot = "ListImage";
 
@@ -83,9 +82,8 @@ if (isset($_POST['submit'])) {
           $filename = $_FILES["proof"]['name'];
           $exts = explode(".", $filename); // split based on period
           $ext = $exts[count($exts)-1]; //take the last split (contents after last period)
-          $filename = $fileroot.$uniqueID.".".$ext;  //build new filename
+          $filename = $fileroot.$list_id.".".$ext;  //build new filename
           $newname = $path.$filename; //add path the file name
-          echo ' it did stuff!!! ';
         }
       
     // If no errors, update database
@@ -97,7 +95,7 @@ if (isset($_POST['submit'])) {
     $edit_stmt->execute([$title, $description, $status, $details, $proof, $comp_date, $public, $list_id, $userid]);
 
     // Redirect:
-   header("Location: edited.php");
+   header("Location: edited.php?id=<?php echo $list_id; ?>");
     exit;
     }
   }
@@ -126,35 +124,40 @@ if (isset($_POST['submit'])) {
 
       <?php include './includes/nav.php' ?>
     </header>
+    <?php 
+    $getdata = "SELECT * FROM 3420_assg_lists WHERE list_id = ?";
+    $userdata= $pdo->prepare($getdata);
+    $userdata->execute([$userid]);
+    $formdata = $userdata->fetch(PDO::FETCH_ASSOC);
+
+    ?>
     <form id="edit-form" method="post" action="" enctype="multipart/form-data">
       <fieldset>
         <legend>List Info</legend>
         <div>
           <label for="title">Title:</label>
-          <input type="text" id="title" name="title" >
-          <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">Please Choose a List Title.</span>
+          <input type="text" id="title" name="title" value="<?php echo $formdata["title"]; ?>">
+          <span class="error <?= !isset($errors['title']) ? 'hidden' : '' ?>">></span>
         </div>
         <div>
         <label for="description">Description:</label>
-          <textarea id="description" name="description" ></textarea>
-          <span class="error <?= !isset($errors['description']) ? 'hidden' : '' ?>">Please Describe Your List.</span>
+          <textarea id="description" name="description" value="<?= $description ?>"><?php echo $formdata["description"]; ?></textarea>
+          <span class="error <?= !isset($errors['description']) ? 'hidden' : '' ?>"></span>
         </div>
       </fieldset>
       <fieldset>
         <legend>Status</legend>
         <div>
-          <input type="radio" name="Status" id="onhold" value="o"
-          <?= $status == 'o' ? 'checked' : '' ?>>
+          <input type="radio" name="Status" id="onhold" value="o">
+          <?php if(isset($formdata["rating"])){if($formdata["status"] == 'o') echo 'checked';} ?>
           <label for="onhold">On Hold</label>
         </div>
         <div>
-          <input type="radio" name="Status" id="progressing" value="p"
-          <?= $status == 'p' ? 'checked' : '' ?>>
+          <input type="radio" name="Status" id="progressing" value="p" <?php if(isset($formdata["rating"])){if($formdata["status"] == 'p') echo 'checked';} ?>>
           <label for="progressing">In Progress</label>
         </div>
         <div>
-          <input type="radio" name="Status" id="complete" value="c"
-          <?= $status == 'c' ? 'checked' : '' ?>>
+          <input type="radio" name="Status" id="complete" value="c" <?php if(isset($formdata["rating"])){if($formdata["status"] == 'c') echo 'checked';} ?>>
           <label for="complete">Completed</label>
         </div>
         <span class="error <?= !isset($errors['status']) ? 'hidden' : '' ?>">Please Choose List Status.</span>
@@ -164,12 +167,12 @@ if (isset($_POST['submit'])) {
         <legend>Validation</legend>
         <div>
           <label for="details">Details:</label>
-          <textarea id="details" name="details"></textarea>
+          <textarea id="details" name="details" value="<?= $details ?>"><?php echo $formdata["details"]; ?></textarea>
           <span class="error <?= !isset($errors['details']) ? 'hidden' : '' ?>">Please Describe Your Entry.</span>
         </div>
         <div>
           <label for="proof">Proof (Image upload):</label>
-          <input type="file" id="proof" name="proof">
+          <input type="file" id="proof" name="proof" value="<?php if(isset($formdata["rating"])){echo $formdata["proof"];} ?>>">
           <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">Please Upload Your File.</span>
           <span class="error <?= !isset($errors['prooferror']) ? 'hidden' : '' ?>">Something Went Wrong With The Image.</span>
           <span class="error <?= !isset($errors['proofsize']) ? 'hidden' : '' ?>">The File Is Too Large (Max 1.5MB).</span>
@@ -180,20 +183,20 @@ if (isset($_POST['submit'])) {
         <legend>Completed</legend>
         <div>
           <label for="rating">Score:</label>
-          <input type="range" id="rating" name="rating" min="1" max="100">
+          <input type="range" id="rating" name="rating" min="1" max="100" value="<?php if(isset($formdata["rating"])){echo $formdata["rating"];} ?>">
           <output for="rating"></output>
         </div>
         <div>
           <label for="completionDate">Completion Date:</label>
-          <input type="date" id="completionDate" name="completionDate">
+          <input type="date" id="completionDate" name="completionDate" value="<?php if(isset($formdata["rating"])){echo $formdata["completionDate"];} ?>">
         </div>
       </fieldset>
       <fieldset>
         <legend>Options</legend>
       <div>
           <label for="public_view">Make List Public?:</label>
-          <input type="hidden" id="public_view" name="public_view" value="Private">
-          <input type="checkbox" id="public_view" name="public_view" value="Public" checked>
+          <input type="hidden" id="public_view" name="public_view" value="Private"<?php if($formdata["status"] == 'Private') echo 'checked'; ?>>
+          <input type="checkbox" id="public_view" name="public_view" value="Public"<?php if($formdata["status"] == 'Public') echo 'checked'; ?>>
         </div>
       </fieldset>
       <button id="submit" name="submit">Update</button>
