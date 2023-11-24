@@ -63,7 +63,8 @@ if (!$item) {
     </header>
     <main>
       <!-- Display item content using the fetched data -->
-      <h2><?php echo htmlspecialchars($item["title"]); ?></h2>
+      <form id="view-form" method="post" action="">
+      <h2><input type="text" id="title" name="title" value="<?php echo $item["title"]; ?>" readonly></h2>
       <pre>
 Parent List:
     <a href="">Places I want to go</a>
@@ -72,14 +73,15 @@ Entry Date
 Completion Date
     <input type="date" value="<?php echo $item['completion_date']; ?>" disabled>
       </pre>
-      <p><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
+      <p><textarea readonly><?php echo htmlspecialchars($item['description']); ?></textarea></p>
       <!-- Other HTML elements using data from $item -->
       <img
-        src="<?php echo $item['image_url']; ?>"
-        alt="<?php echo $item['alt_text']; ?>"
-        width="<?php echo $item['image_width']; ?>"
-        height="<?php echo $item['image_height']; ?>"
+      src="<?php echo isset($item['image_url']) ? $item['image_url'] : ''; ?>"
+      alt="<?php echo isset($item['alt_text']) ? $item['alt_text'] : ''; ?>"
+      width="<?php echo isset($item['image_width']) ? $item['image_width'] : ''; ?>"
+      height="<?php echo isset($item['image_height']) ? $item['image_height'] : ''; ?>"
       >
+      </form>
     </main>
     <?php include './includes/footer.php' ?>
   </body>
