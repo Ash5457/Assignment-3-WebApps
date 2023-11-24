@@ -81,10 +81,7 @@ if (isset($_POST['submit'])) {
       <li><a href="view-item.php?id=<?php echo $list["list_id"]; ?>"><?= $list["title"] ?></a> 
       <?php if ($list["user_id"] == $userid) { ?> 
         <a href="edit-item.php?id=<?php echo $list["list_id"]; ?>"><i class="fa-solid fa-pen-to-square"></i></a>
-        <button class="btn btn-delete">
-          <span class="mdi mdi-delete mdi-24px"></span>
-          <span class="mdi mdi-delete-empty mdi-24px"></span>
-          <span><i class="fa-solid fa-trash"></i></span>
+          <a href="delete-item.php?id=<?php echo $list["list_id"]; ?>"><i class="fa-solid fa-trash"></i></a>
         </button>
       <?php } ?>
         <?php endforeach; ?>

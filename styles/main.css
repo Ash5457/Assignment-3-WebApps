@@ -54,7 +54,7 @@ nav button {
 /* Hover state for buttons and nav links */
 nav a:hover,
 nav a:visited:hover,
-nav button:hover, i[class="fa-solid fa-pen-to-square"]:hover {
+nav button:hover, i[class="fa-solid fa-pen-to-square"]:hover{
   color: white;
   background-color: green;
   transform: scale(1.2);
@@ -196,7 +196,7 @@ main img {
 }
 
 /* Buttons */
-button.btn, i[class="fa-solid fa-pen-to-square"] {
+button.btn, i[class="fa-solid fa-pen-to-square"], i[class="fa-solid fa-trash"]{
   background-color: #0070c0;
   color: white;
   border: none;
@@ -206,7 +206,7 @@ button.btn, i[class="fa-solid fa-pen-to-square"] {
   margin-bottom: 0.2em;
 }
 
-button.btn:hover {
+i[class="fa-solid fa-trash"]:hover  {
   background-color: red;
   transform: scale(1.2);
 }
@@ -230,7 +230,7 @@ textarea:focus {
 }
 
 /* Footer styles */
-footer {
+footer{
   color: white;
   font-size: 1em;
   text-align: center;
@@ -249,6 +249,7 @@ footer {
   }
 
   button.btn {
+    color: white;
     padding: 0.5em 0.8em;
   }
 }
@@ -307,9 +308,6 @@ form.search-form {
   border: 0.25em solid #ccc;
   border-radius: 0.15em;
 }
-.hidden {
-  display: none;
-}
 /* Error Message*/
 .error {
   display: inline-block;
@@ -326,3 +324,5 @@ div>.error {
 .hidden {
   display: none;
 }
+
+
