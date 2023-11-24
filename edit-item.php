@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
     <?php 
     $getdata = "SELECT * FROM 3420_assg_lists WHERE list_id = ?";
     $userdata= $pdo->prepare($getdata);
-    $userdata->execute([$userid]);
+    $userdata->execute([$list_id]);
     $formdata = $userdata->fetch(PDO::FETCH_ASSOC);
 
     ?>
