@@ -16,7 +16,7 @@ CREATE TABLE `3420_assg_lists` (
 	`user_id`		    INT(10) NOT NULL,
     `title`             TEXT NOT NULL,
     `description`       TEXT NOT NULL,
-    `status`            ENUM('onhold', 'progressing', 'complete'),
+    `status`            ENUM('', 'o', 'p', 'c'),
     `details`           TEXT,
     `image_url`         TEXT,
     `completion_date`   DATETIME,
