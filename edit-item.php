@@ -45,8 +45,12 @@ $userdata->execute([$list_id]);
 $formdata = $userdata->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['submit'])) {
-  var_dump($_POST);
-  var_dump($_FILES);
+      
+    // Sanitize all text inputs
+    $title= htmlspecialchars($title);
+    $description= htmlspecialchars($description);
+    $details= htmlspecialchars($details);
+
  if (strlen($title) == 0) {
     $errors['title'] = true;
   }
@@ -111,36 +115,52 @@ if (isset($_POST['submit'])) {
       //get the original file name for extension, where 'fileToProcess' was the name of the
       //file upload form element
       $filename = $_FILES["proof"]['name'];
+
+      // Get the old extension
+      $oldexts = explode(".", $formdata['image_url']);
+      $oldext = $oldexts[count($oldexts)-1];
+
       $exts = explode(".", $filename); // split based on period
       $ext = $exts[count($exts)-1]; //take the last split (contents after last period)
-      $filename = $fileroot.$list_id.".".$ext;  //build new filename
-      $newname = $path.$filename; //add path the file name
 
+      if (!empty($ext)){
+      $filename = $fileroot.$list_id.".".$ext;  //build new filename
+      $newname = $path.$filename; //add path to the file name
+      echo "$filename";}
+      else {
+        $filename = $fileroot.$list_id.".".$oldext;  //build new filename
+      $newname = $path.$filename; //add path to the file name
+      echo "$filename";
+      }
+
+      if(is_uploaded_file($_FILES["proof"]['tmp_name'])){
       // delete previous file in folder (as ones with different extensions would not be replaced)
         $del_file = $path.$formdata['image_url'];
         array_map( "unlink", glob($del_file));
         move_uploaded_file($_FILES['proof']['tmp_name'], $newname);
+      }
   }
 }
     // If no errors, update database
     if (count($errors) === 0) {
+
     // Edit the list in Database`:
-if ($oldfile != true){
-  if(empty($comp_date)){$comp_date = "0000:00:00";} // if statement to set a default for database
-    $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `image_url`= ?, `completion_date` = ?, `publicity` = ?
-    WHERE `list_id` = ? AND `user_id` = ?";
-    $edit_stmt = $pdo->prepare($query);
-    $edit_stmt->execute([$title, $description, $status, $details, $filename, $comp_date, $public, $list_id, $userid]);}
-    else{
-      $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `completion_date` = ?, `publicity` = ?
-    WHERE `list_id` = ? AND `user_id` = ?";
-    $edit_stmt = $pdo->prepare($query);
-    $edit_stmt->execute([$title, $description, $status, $details, $comp_date, $public, $list_id, $userid]);
+    if ($oldfile != true){
+    if(empty($comp_date)){$comp_date = "0000:00:00";} // if statement to set a default for database
+      $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `image_url`= ?, `completion_date` = ?, `publicity` = ?
+      WHERE `list_id` = ? AND `user_id` = ?";
+      $edit_stmt = $pdo->prepare($query);
+      $edit_stmt->execute([$title, $description, $status, $details, $filename, $comp_date, $public, $list_id, $userid]);}
+      else{
+        $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `completion_date` = ?, `publicity` = ?
+      WHERE `list_id` = ? AND `user_id` = ?";
+      $edit_stmt = $pdo->prepare($query);
+      $edit_stmt->execute([$title, $description, $status, $details, $comp_date, $public, $list_id, $userid]);
     }
 
-   /* // Redirect:
+   // Redirect:
    header("Location: edited.php?id=<?php echo $list_id; ?>");
-    exit;*/
+    exit;
     }
   }
 
@@ -217,11 +237,11 @@ if ($oldfile != true){
           <span class="error <?= !isset($errors['prooftype']) ? 'hidden' : '' ?>">The File Is The Wrong Format (PNG, JPG, JPEG).</span>
         
           <?php 
-          $path = WEBROOT."www_data/";
+          $printpath = "/~$direx[2]/www_data/";
           if (isset($formdata['image_url'])) {?>
-             <div class="alb">
-              <?php echo "Current File on The List:"; ?>
-             <img src="<?php echo $path.$formdata['image_url']?>" alt="">
+            <div><?php echo "Current File on The List:"; ?></div>
+             <div>
+              <img src="<?php echo $printpath . $formdata['image_url']?>" height="300">
              </div>
           		<?php } ?>
         </div>

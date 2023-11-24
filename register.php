@@ -24,6 +24,16 @@ $pdo = connectDB();
 
 //validate the form
 if (isset($_POST['submit'])) {
+  // Sanitize all text inputs
+  $name               = htmlspecialchars($name);
+  $gender             = htmlspecialchars($gender);
+  $username           = htmlspecialchars($username);
+  $email              = htmlspecialchars($email);
+  $password           = htmlspecialchars($password);
+  $confirmPassword    = htmlspecialchars($confirmPassword);
+  $title              = htmlspecialchars($title);
+  $description        = htmlspecialchars($description);
+  
   //basic form validation
   if (strlen($name) == 0) {
     $errors['name'] = true;
@@ -63,6 +73,7 @@ if (isset($_POST['submit'])) {
 
 
   if (count($errors) === 0) { 
+
     // Hash the password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 

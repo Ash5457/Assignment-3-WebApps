@@ -23,6 +23,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateUser'])) {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
+    // Sanitize all text inputs
+    $name               = htmlspecialchars($name);
+    $gender             = htmlspecialchars($gender);
+    $username           = htmlspecialchars($username);
+    $email              = htmlspecialchars($email);
+    $password           = htmlspecialchars($password);
+    $confirmPassword    = htmlspecialchars($confirmPassword);
+
+
     // Simple validation 
     if (empty($name) || empty($gender) || empty($username) || empty($email)) {
         $userUpdateError = 'All fields are required for user information update.';

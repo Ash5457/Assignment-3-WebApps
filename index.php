@@ -32,6 +32,11 @@ if (isset($_POST['submit'])) {
   }
 
   if (count($errors) === 0) { 
+    // Sanitize all text inputs
+    $title= htmlspecialchars($title);
+    $description= htmlspecialchars($description);
+    
+    
     $listquery = "INSERT INTO 3420_assg_lists (`user_id`, `title`, `description`, `publicity`) VALUES (?, ?, ?, ?)";
     $list_stmt = $pdo->prepare($listquery);
     $list_stmt->execute([$userid, $title, $description, $public]);
