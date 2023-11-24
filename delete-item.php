@@ -16,12 +16,12 @@ if(isset($_GET['id'])){
 
 $pdo = connectDB();
 // Check if the user has confirmed the account deletion
-if (isset($_POST['confirmDelete'])) {
-    // Delete all data associated with the user
-    $stmtDeleteLists = $pdo->prepare("DELETE FROM 3420_assg_lists WHERE user_id = ? AND list_id = ?");
-    $stmtDeleteLists->execute([$userid, $list_id]);
+if (isset($_POST['DelList'])) {
+    // Delete The List
+    $stmtDeleteList = $pdo->prepare("DELETE FROM 3420_assg_lists WHERE user_id = ? AND list_id = ?");
+    $stmtDeleteList->execute([$userid, $list_id]);
 
-// Redirect to login
+// Redirect to Home Page
 header("Location: index.php");
 exit();
 }
@@ -45,12 +45,12 @@ exit();
         <?php include './includes/nav.php' ?>
     </header>
     <main>
-        <form action="delete-account.php" method="post">
+        <form action="" method="post">
             <fieldset>
                 <legend>Confirmation</legend>
                 <p>Are you sure you want to delete your Item? This action cannot be undone.</p>
                 <div>
-                    <button type="submit" name="confirmDelete" class="big-button">Yes, I'm sure. Delete my Item</button>
+                    <button type="submit" name="DelList" class="big-button">Yes, I'm sure. Delete my Item</button>
                 </div>
             </fieldset>
         </form>

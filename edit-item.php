@@ -18,12 +18,13 @@ $errors = array();
 // delcare defaults
 $title              = $_POST['title'] ?? "";
 $description        = $_POST['description'] ?? "";
-$status             = $_POST['status'] ?? null;
+$status             = $_POST['status'] ?? "o";
 $details            = $_POST['details'] ?? "";
 $proof              = $_FILES['proof'] ?? null;
 $rating             = $_POST['rating'] ?? "50";
-$comp_date          = $_POST['completionDate'] ?? null;
+$comp_date          = $_POST['completionDate'] ?? 9999-12-31;
 $public             = $_POST['public_view'] ?? 'Public';
+$oldfile            = false;
 
 
 
@@ -38,6 +39,10 @@ $result = $checkownership->fetch(PDO::FETCH_ASSOC);
 if ($result['user_id'] != $userid){
   header("Location: index.php");
 }
+$getdata = "SELECT * FROM 3420_assg_lists WHERE list_id = ?";
+$userdata= $pdo->prepare($getdata);
+$userdata->execute([$list_id]);
+$formdata = $userdata->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['submit'])) {
   if (strlen($title) == 0) {
@@ -53,6 +58,10 @@ if (isset($_POST['submit'])) {
   if (strlen($details) === 0) {
     $errors['details'] = true;
   }
+  if (isset($formdata['image_url']) && !isset($_FILES["proof"])){
+    $oldfile = true;
+  }
+  else{
     $allowed_image_extension = array(
         "png",
         "jpg",
@@ -85,21 +94,27 @@ if (isset($_POST['submit'])) {
           $filename = $fileroot.$list_id.".".$ext;  //build new filename
           $newname = $path.$filename; //add path the file name
         }
-      
+  }
     // If no errors, update database
     if (count($errors) === 0) {
     // Edit the list in Database`:
+if ($oldfile != true){
     $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `image_url`= ?, `completion_date` = ?, `publicity` = ?
     WHERE `list_id` = ? AND `user_id` = ?";
     $edit_stmt = $pdo->prepare($query);
-    $edit_stmt->execute([$title, $description, $status, $details, $proof, $comp_date, $public, $list_id, $userid]);
+    $edit_stmt->execute([$title, $description, $status, $details, $proof, $comp_date, $public, $list_id, $userid]);}
+    else{
+      $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `completion_date` = ?, `publicity` = ?
+    WHERE `list_id` = ? AND `user_id` = ?";
+    $edit_stmt = $pdo->prepare($query);
+    $edit_stmt->execute([$title, $description, $status, $details, $comp_date, $public, $list_id, $userid]);
+    }
 
     // Redirect:
    header("Location: edited.php?id=<?php echo $list_id; ?>");
     exit;
     }
   }
-    
 
 ?>
 
@@ -124,13 +139,6 @@ if (isset($_POST['submit'])) {
 
       <?php include './includes/nav.php' ?>
     </header>
-    <?php 
-    $getdata = "SELECT * FROM 3420_assg_lists WHERE list_id = ?";
-    $userdata= $pdo->prepare($getdata);
-    $userdata->execute([$list_id]);
-    $formdata = $userdata->fetch(PDO::FETCH_ASSOC);
-
-    ?>
     <form id="edit-form" method="post" action="" enctype="multipart/form-data">
       <fieldset>
         <legend>List Info</legend>
@@ -148,16 +156,18 @@ if (isset($_POST['submit'])) {
       <fieldset>
         <legend>Status</legend>
         <div>
-          <input type="radio" name="Status" id="onhold" value="o">
-          <?php if(isset($formdata["rating"])){if($formdata["status"] == 'o') echo 'checked';} ?>
+          <input type="radio" name="Status" id="onhold" value="o"
+          <?php if(isset($formdata["status"])){if($formdata["status"] == "o") echo 'checked';} ?>>
           <label for="onhold">On Hold</label>
         </div>
         <div>
-          <input type="radio" name="Status" id="progressing" value="p" <?php if(isset($formdata["rating"])){if($formdata["status"] == 'p') echo 'checked';} ?>>
+          <input type="radio" name="Status" id="progressing" value="p"
+          <?php if(isset($formdata["status"])){if($formdata["status"] == "p") echo 'checked';} ?>>
           <label for="progressing">In Progress</label>
         </div>
         <div>
-          <input type="radio" name="Status" id="complete" value="c" <?php if(isset($formdata["rating"])){if($formdata["status"] == 'c') echo 'checked';} ?>>
+          <input type="radio" name="Status" id="complete" value="c"
+          <?php if(isset($formdata["status"])){if($formdata["status"] == "c") echo 'checked';} ?>>
           <label for="complete">Completed</label>
         </div>
         <span class="error <?= !isset($errors['status']) ? 'hidden' : '' ?>">Please Choose List Status.</span>
@@ -172,12 +182,20 @@ if (isset($_POST['submit'])) {
         </div>
         <div>
           <label for="proof">Proof (Image upload):</label>
-          <input type="file" id="proof" name="proof" value="<?php if(isset($formdata["rating"])){echo $formdata["proof"];} ?>>">
+          <input type="file" id="proof" name="proof" value="<?= $proof ?>">
           <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">Please Upload Your File.</span>
           <span class="error <?= !isset($errors['prooferror']) ? 'hidden' : '' ?>">Something Went Wrong With The Image.</span>
           <span class="error <?= !isset($errors['proofsize']) ? 'hidden' : '' ?>">The File Is Too Large (Max 1.5MB).</span>
           <span class="error <?= !isset($errors['prooftype']) ? 'hidden' : '' ?>">The File Is The Wrong Format (PNG, JPG, JPEG).</span>
+        
+          <?php 
+          if ($oldfile == true) {?>
+             <div class="alb">
+             	<img src="uploads/<?=$formdata['image_url']?>">
+             </div>
+          		<?php } ?>
         </div>
+
       </fieldset>
       <fieldset>
         <legend>Completed</legend>
@@ -188,7 +206,7 @@ if (isset($_POST['submit'])) {
         </div>
         <div>
           <label for="completionDate">Completion Date:</label>
-          <input type="date" id="completionDate" name="completionDate" value="<?php if(isset($formdata["rating"])){echo $formdata["completionDate"];} ?>">
+          <input type="date" id="completionDate" name="completionDate" value="<?php if(isset($formdata["completionDate"])){echo $formdata["completionDate"];} ?>">
         </div>
       </fieldset>
       <fieldset>
