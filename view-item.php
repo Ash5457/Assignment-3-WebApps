@@ -1,3 +1,45 @@
+<?php
+session_start(); // Start the session
+
+require './includes/library.php';
+
+// Assume you have the item ID passed as a parameter in the URL (e.g., view-item.php?id=1)
+$itemId = $_GET['id'] ?? null;
+
+if (!$itemId) {
+    // Redirect or handle the case where no item ID is provided
+    header("Location: index.php");
+    exit();
+}
+
+$userid = $_SESSION['user_id'];
+$pdo = connectDB();
+
+// Check if the item is public or if the user is the owner
+$check = "SELECT user_id, publicity FROM 3420_assg_lists WHERE list_id = ?";
+$checkownership = $pdo->prepare($check);
+$checkownership->execute([$itemId]);
+$result = $checkownership->fetch(PDO::FETCH_ASSOC);
+
+// If the item is private and the user is not the owner, or if the item is not found, redirect to index.php
+if (!$result || ($result['publicity'] === 'Private' && $result['user_id'] != $userid)) {
+    header("Location: index.php");
+    exit();
+}
+
+// Fetch the data if the item is public or if the user is the owner
+$stmt = $pdo->prepare("SELECT * FROM 3420_assg_lists WHERE list_id = ?");
+$stmt->execute([$itemId]);
+$item = $stmt->fetch();
+
+// Check if the item is not found
+if (!$item) {
+    // Redirect or handle the case where the item is not found
+    header("Location: index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -20,39 +62,23 @@
       <?php include './includes/nav.php' ?>
     </header>
     <main>
-      <h2>Visiting Mecca</h2>
+      <!-- Display item content using the fetched data -->
+      <h2><?php echo htmlspecialchars($item["title"]); ?></h2>
       <pre>
 Parent List:
     <a href="">Places I want to go</a>
 Entry Date
-    <input type="date" value="2019-03-08" disabled>
+    <input type="date" value="<?php echo $item['entry_date']; ?>" disabled>
 Completion Date
-    <input type="date" value="2019-03-08" disabled>
+    <input type="date" value="<?php echo $item['completion_date']; ?>" disabled>
       </pre>
-      <p>
-        After being stuck in Peterborough all my life I decided I should go
-        travel while I could, there's a few places I want to go. One of them has
-        always been Mecca, with such great religious importance alongside such
-        unique architecture it was a great change from plain old Peterborough.
-      </p>
-      <p>
-        As a Muslim once in your life you need to perform an act called Hajj,
-        and I thought this was the perfect chance to explore. Luckily during my
-        visit I was able to get close enough to take a good picture of the
-        Kaaba. The entire experience was fascinating to me as being in Canada my
-        whole life I never could imagine a world so vastly different just a
-        flight away. I shaved my head and tried new foods, but also saw a lot of
-        interesting things like a hoarde of pigeons or a camel in the middle of
-        the road but just the geography and culture as a whole was a new
-        eye-opening experience. The streets were so clean in places it made
-        Peterborough look like the slums... which is not something I ever
-        expected I would say.
-      </p>
+      <p><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
+      <!-- Other HTML elements using data from $item -->
       <img
-        src="images/kaaba.jpg"
-        alt="An image of the Kaaba from a close distance, a Green clocktower can be seen in the backgroudn against the night sky"
-        width="299"
-        height="531"
+        src="<?php echo $item['image_url']; ?>"
+        alt="<?php echo $item['alt_text']; ?>"
+        width="<?php echo $item['image_width']; ?>"
+        height="<?php echo $item['image_height']; ?>"
       >
     </main>
     <?php include './includes/footer.php' ?>
