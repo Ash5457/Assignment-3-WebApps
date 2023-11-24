@@ -253,10 +253,11 @@ if (isset($_POST['submit'])) {
           <label for="rating">Score:</label>
           <input type="range" id="rating" name="rating" min="1" max="100" value="<?php if(isset($formdata["rating"])){echo $formdata["rating"];} ?>">
           <output for="rating"></output>
+          <?php echo $formdata["rating"]?>
         </div>
         <div>
           <label for="completionDate">Completion Date:</label>
-          <input type="date" id="completionDate" name="completionDate" value="<?php if(isset($formdata["completionDate"])){echo $formdata["completionDate"];} ?>">
+          <input type="date" id="completionDate" name="completionDate" value="<?php if(isset($formdata["completion_date"])){echo $formdata["completion_date"];} ?>">
         </div>
       </fieldset>
       <fieldset>
