@@ -45,10 +45,7 @@ if (!$item) {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script
-      src="https://kit.fontawesome.com/05ad49203b.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/05ad49203b.js" crossorigin="anonymous"></script>
     <title>View Item</title>
     <!-- include javascript and css-->
     <link rel="stylesheet" href="styles/main.css">
@@ -58,29 +55,50 @@ if (!$item) {
     <header>
       <!--This will be the main heading of the page so users know what page they're on-->
       <h1>View Item</h1>
-
       <?php include './includes/nav.php' ?>
     </header>
     <main>
       <!-- Display item content using the fetched data -->
       <form id="view-form" method="post" action="">
-      <h2><input type="text" id="title" name="title" value="<?php echo $item["title"]; ?>" readonly></h2>
-      <pre>
-Parent List:
-    <a href="">Places I want to go</a>
-Entry Date
+        <fieldset>
+          <legend>List Info</legend>
+          <div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" value="<?php echo $item["title"]; ?>" readonly>
+          </div>
+          <div>
+            <label>Parent List:</label>
+            <a href="#">Places I want to go</a>
+          </div>
+          <div>
+  <label>Entry Date:</label>
+  <?php if (isset($item['entry_date'])): ?>
     <input type="date" value="<?php echo $item['entry_date']; ?>" disabled>
-Completion Date
-    <input type="date" value="<?php echo $item['completion_date']; ?>" disabled>
-      </pre>
-      <p><textarea readonly><?php echo htmlspecialchars($item['description']); ?></textarea></p>
-      <!-- Other HTML elements using data from $item -->
-      <img
-      src="<?php echo isset($item['image_url']) ? $item['image_url'] : ''; ?>"
-      alt="<?php echo isset($item['alt_text']) ? $item['alt_text'] : ''; ?>"
-      width="<?php echo isset($item['image_width']) ? $item['image_width'] : ''; ?>"
-      height="<?php echo isset($item['image_height']) ? $item['image_height'] : ''; ?>"
-      >
+  <?php else: ?>
+    <span>No Entry Date provided</span>
+  <?php endif; ?>
+</div>
+          <?php if (isset($item['completion_date'])): ?>
+            <div>
+              <label>Completion Date:</label>
+              <input type="date" value="<?php echo $item['completion_date']; ?>" disabled>
+            </div>
+          <?php endif; ?>
+        </fieldset>
+        <fieldset>
+          <legend>Description</legend>
+          <div>
+            <label for="description">Description:</label>
+            <p><?php echo $item['description']; ?></p>
+          </div>
+          <!-- Other HTML elements using data from $item -->
+          <div>
+            <?php if (isset($item['image_url'])): ?>
+              <label>Current File on The List:</label>
+              <img src="<?php echo "/~$direx[2]/www_data/" . $item['image_url']; ?>" height="300">
+            <?php endif; ?>
+          </div>
+        </fieldset>
       </form>
     </main>
     <?php include './includes/footer.php' ?>

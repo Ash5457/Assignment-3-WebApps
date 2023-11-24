@@ -13,15 +13,29 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// Fetch user data
+$stmtUser = $pdo->prepare("SELECT * FROM 3420_assg_users WHERE id = ?");
+$stmtUser->execute([$user_id]);
+$user = $stmtUser->fetch();
+
+// Initialize variables with default values or retrieve them from $user
+    $name = isset($_POST['name']) ? $_POST['name'] : $user['name'];
+    $gender = isset($_POST['gender']) ? $_POST['gender'] : $user['gender'];
+    $username = isset($_POST['username']) ? $_POST['username'] : $user['username'];
+    $email = isset($_POST['email']) ? $_POST['email'] : $user['email'];
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+
 // Handle user information update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateUser'])) {
-    // Validate and update user information
-    $name = $_POST['name'];
-    $gender = $_POST['gender'];
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+
+    // Initialize variables with default values or retrieve them from $user
+    $name = isset($_POST['name']) ? $_POST['name'] : $user['name'];
+    $gender = isset($_POST['gender']) ? $_POST['gender'] : $user['gender'];
+    $username = isset($_POST['username']) ? $_POST['username'] : $user['username'];
+    $email = isset($_POST['email']) ? $_POST['email'] : $user['email'];
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
 
     // Sanitize all text inputs
     $name               = htmlspecialchars($name);
@@ -29,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateUser'])) {
     $username           = htmlspecialchars($username);
     $email              = htmlspecialchars($email);
     $password           = htmlspecialchars($password);
-    $confirmPassword    = htmlspecialchars($confirmPassword);
+    $confirm_password    = htmlspecialchars($confirm_password);
 
 
     // Simple validation 
@@ -57,10 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateUser'])) {
     }
 }
 
-// Fetch user data
-$stmtUser = $pdo->prepare("SELECT * FROM 3420_assg_users WHERE id = ?");
-$stmtUser->execute([$user_id]);
-$user = $stmtUser->fetch();
+
 ?>
 
 <!DOCTYPE html>
