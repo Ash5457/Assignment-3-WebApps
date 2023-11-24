@@ -18,11 +18,11 @@ $errors = array();
 // delcare defaults
 $title              = $_POST['title'] ?? "";
 $description        = $_POST['description'] ?? "";
-$status             = $_POST['status'] ?? "o";
+$status             = $_POST['status'] ?? "";
 $details            = $_POST['details'] ?? "";
 $proof              = $_FILES['proof'] ?? null;
 $rating             = $_POST['rating'] ?? "50";
-$comp_date          = $_POST['completionDate'] ?? 9999-12-31;
+$comp_date          = $_POST['completionDate'] ?? "";
 $public             = $_POST['public_view'] ?? 'Public';
 $oldfile            = false;
 
@@ -45,13 +45,15 @@ $userdata->execute([$list_id]);
 $formdata = $userdata->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['submit'])) {
-  if (strlen($title) == 0) {
+  var_dump($_POST);
+  var_dump($_FILES);
+ if (strlen($title) == 0) {
     $errors['title'] = true;
   }
   if (strlen($description) == 0) {
     $errors['description'] = true;
   }
-  $valid_status = ['o', 'p', 'c'];
+  $valid_status = ["o", "p", "c"];
   if (!in_array($status, $valid_status)) {
     $errors['status'] = true;
   }
@@ -68,10 +70,15 @@ if (isset($_POST['submit'])) {
         "jpeg"
     );
     
-    // Get image file extension
+    //Set Variables for File Upload
     $file_extension = pathinfo($_FILES["proof"]["name"], PATHINFO_EXTENSION);
     $maxsize    = 1500000;
+    $path = WEBROOT."www_data/";
+    $fileroot = "ListImage";
     
+  if (!isset($formdata['image_url'])) //Removes the file check if there is already one in the directory!
+  {
+
     // Validate file input to check if is not empty
     if (!file_exists($_FILES["proof"]["tmp_name"])) {
         $errors['proof'] = true;
@@ -83,9 +90,6 @@ if (isset($_POST['submit'])) {
         $errors['proofsize'] = true;
     }
     elseif(is_uploaded_file($_FILES["proof"]['tmp_name'])){
-          $path = '/uploads';
-          $fileroot = "ListImage";
-
           //get the original file name for extension, where 'fileToProcess' was the name of the
           //file upload form element
           $filename = $_FILES["proof"]['name'];
@@ -93,16 +97,40 @@ if (isset($_POST['submit'])) {
           $ext = $exts[count($exts)-1]; //take the last split (contents after last period)
           $filename = $fileroot.$list_id.".".$ext;  //build new filename
           $newname = $path.$filename; //add path the file name
+
+          // delete previous file in folder (as ones with different extensions would not be replaced)
+          if(isset($formdata['image_url'])){
+            $del_file = $path.$formdata['image_url'];
+            array_map( "unlink", glob($del_file));
+            }
+          move_uploaded_file($_FILES['proof']['tmp_name'], $newname);
         }
+
   }
+  else {
+      //get the original file name for extension, where 'fileToProcess' was the name of the
+      //file upload form element
+      $filename = $_FILES["proof"]['name'];
+      $exts = explode(".", $filename); // split based on period
+      $ext = $exts[count($exts)-1]; //take the last split (contents after last period)
+      $filename = $fileroot.$list_id.".".$ext;  //build new filename
+      $newname = $path.$filename; //add path the file name
+
+      // delete previous file in folder (as ones with different extensions would not be replaced)
+        $del_file = $path.$formdata['image_url'];
+        array_map( "unlink", glob($del_file));
+        move_uploaded_file($_FILES['proof']['tmp_name'], $newname);
+  }
+}
     // If no errors, update database
     if (count($errors) === 0) {
     // Edit the list in Database`:
 if ($oldfile != true){
+  if(empty($comp_date)){$comp_date = "0000:00:00";} // if statement to set a default for database
     $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `image_url`= ?, `completion_date` = ?, `publicity` = ?
     WHERE `list_id` = ? AND `user_id` = ?";
     $edit_stmt = $pdo->prepare($query);
-    $edit_stmt->execute([$title, $description, $status, $details, $proof, $comp_date, $public, $list_id, $userid]);}
+    $edit_stmt->execute([$title, $description, $status, $details, $filename, $comp_date, $public, $list_id, $userid]);}
     else{
       $query = "UPDATE `3420_assg_lists` SET `title` = ?, `description` = ?, `status`= ?, `details`= ?, `completion_date` = ?, `publicity` = ?
     WHERE `list_id` = ? AND `user_id` = ?";
@@ -110,9 +138,9 @@ if ($oldfile != true){
     $edit_stmt->execute([$title, $description, $status, $details, $comp_date, $public, $list_id, $userid]);
     }
 
-    // Redirect:
+   /* // Redirect:
    header("Location: edited.php?id=<?php echo $list_id; ?>");
-    exit;
+    exit;*/
     }
   }
 
@@ -156,17 +184,17 @@ if ($oldfile != true){
       <fieldset>
         <legend>Status</legend>
         <div>
-          <input type="radio" name="Status" id="onhold" value="o"
+          <input type="radio" name="status" id="onhold" value="o"
           <?php if(isset($formdata["status"])){if($formdata["status"] == "o") echo 'checked';} ?>>
           <label for="onhold">On Hold</label>
         </div>
         <div>
-          <input type="radio" name="Status" id="progressing" value="p"
+          <input type="radio" name="status" id="progressing" value="p"
           <?php if(isset($formdata["status"])){if($formdata["status"] == "p") echo 'checked';} ?>>
           <label for="progressing">In Progress</label>
         </div>
         <div>
-          <input type="radio" name="Status" id="complete" value="c"
+          <input type="radio" name="status" id="complete" value="c"
           <?php if(isset($formdata["status"])){if($formdata["status"] == "c") echo 'checked';} ?>>
           <label for="complete">Completed</label>
         </div>
@@ -182,16 +210,18 @@ if ($oldfile != true){
         </div>
         <div>
           <label for="proof">Proof (Image upload):</label>
-          <input type="file" id="proof" name="proof" value="<?= $proof ?>">
+          <input type="file" id="proof" name="proof">
           <span class="error <?= !isset($errors['proof']) ? 'hidden' : '' ?>">Please Upload Your File.</span>
           <span class="error <?= !isset($errors['prooferror']) ? 'hidden' : '' ?>">Something Went Wrong With The Image.</span>
           <span class="error <?= !isset($errors['proofsize']) ? 'hidden' : '' ?>">The File Is Too Large (Max 1.5MB).</span>
           <span class="error <?= !isset($errors['prooftype']) ? 'hidden' : '' ?>">The File Is The Wrong Format (PNG, JPG, JPEG).</span>
         
           <?php 
-          if ($oldfile == true) {?>
+          $path = WEBROOT."www_data/";
+          if (isset($formdata['image_url'])) {?>
              <div class="alb">
-             	<img src="uploads/<?=$formdata['image_url']?>">
+              <?php echo "Current File on The List:"; ?>
+             <img src="<?php echo $path.$formdata['image_url']?>" alt="">
              </div>
           		<?php } ?>
         </div>
