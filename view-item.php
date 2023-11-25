@@ -71,6 +71,13 @@ if (!$item) {
             <input type="text" id="description" name="description" value="<?php echo $item["description"]; ?>" readonly>
           </div>
           <div>
+            <label for="title">Status:</label>
+            <?php if ($item["status"] == "c"){ echo "Completed!";} ?>
+            <?php if ($item["status"] == "p"){ echo "In Progress!!";} ?>
+            <?php if ($item["status"] == "o"){ echo "On Hold!!";} ?>
+            <?php if ($item["status"] == ""){ echo "This sneaky user forgot their status!!";} ?>
+          </div>
+          <div>
             <label for="rating">User Score: <?php echo $item["rating"]?></label>
             <input type="range" id="rating" name="rating" min="1" max="100" value="<?php echo $item["rating"]; ?>" disabled>
             <output for="rating"></output>
@@ -81,10 +88,10 @@ if (!$item) {
             </div>
         </fieldset>
         <fieldset>
-          <legend>Description</legend>
+          <legend>Additional Info</legend>
           <div>
-            <label for="description">Description:</label>
-            <p><?php echo $item['description']; ?></p>
+            <label for="details">Details:</label>
+            <p><?php echo $item['details']; ?></p>
           </div>
           <!-- Other HTML elements using data from $item -->
           <div>
