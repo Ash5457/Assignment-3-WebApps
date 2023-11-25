@@ -12,7 +12,7 @@ if (!$itemId) {
     exit();
 }
 
-$userid = $_SESSION['user_id'];
+$userid = $_SESSION['user_id'] ?? null;
 $pdo = connectDB();
 
 // Check if the item is public or if the user is the owner
@@ -67,18 +67,18 @@ if (!$item) {
             <input type="text" id="title" name="title" value="<?php echo $item["title"]; ?>" readonly>
           </div>
           <div>
-            <label>Parent List:</label>
-            <a href="#">Places I want to go</a>
+            <label for="title">Description:</label>
+            <input type="text" id="description" name="description" value="<?php echo $item["description"]; ?>" readonly>
           </div>
-          <?php if (isset($item['completion_date'])): ?>
-            <div>
-              <?php
-                  if (isset($item['completion_date'])) {
-                  echo "Completion Date: " . $item['completion_date'];
-                  }
-              ?>
+          <div>
+            <label for="rating">User Score: <?php echo $item["rating"]?></label>
+            <input type="range" id="rating" name="rating" min="1" max="100" value="<?php echo $item["rating"]; ?>" disabled>
+            <output for="rating"></output>
+          </div>
+          <div>
+          <label for="title">Completion Date:</label>
+            <input type="date" value="<?php echo $item["completion_date"]; ?>" disabled>
             </div>
-          <?php endif; ?>
         </fieldset>
         <fieldset>
           <legend>Description</legend>
@@ -89,7 +89,7 @@ if (!$item) {
           <!-- Other HTML elements using data from $item -->
           <div>
             <?php if (isset($item['image_url'])): ?>
-              <label>Validation for the List:</label>
+              <label>Image Proof:</label>
               <img src="<?php echo "/~$direx[2]/www_data/" . $item['image_url']; ?>" height="300">
             <?php endif; ?>
           </div>

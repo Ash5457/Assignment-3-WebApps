@@ -7,6 +7,7 @@ $pdo = connectDB();
 $search = $_POST['search'] ?? "";
 $errors = array();
 $userLists = array();
+$varpub ="Public";
 
 if(isset($_POST['submit'])){
 
@@ -20,21 +21,9 @@ if(isset($_POST['submit'])){
 
     // Use wildcards for a partial match
     $searchTerm = "%$search%";
-    $query = "SELECT * FROM 3420_assg_lists WHERE title LIKE ? ";
+    $query = "SELECT * FROM 3420_assg_lists WHERE `title` LIKE ? AND publicity = ? OR `description` LIKE ? AND publicity = ?";
     $stmt = $pdo->prepare($query);
-    $stmt->execute([$searchTerm]);
-
-    // Fetch the user's newly created list and include it in the search results
-    $userId = $_SESSION['user_id'] ?? null;
-    if ($userId) {
-        $stmtUserList = $pdo->prepare("SELECT * FROM 3420_assg_lists WHERE user_id = ? AND title LIKE ?");
-        $stmtUserList->execute([$userId, $searchTerm]);
-        $userList = $stmtUserList->fetch(PDO::FETCH_ASSOC);
-
-        if ($userList) {
-          $userLists[] = $userList;
-        }
-    }
+    $stmt->execute([$searchTerm, $varpub, $searchTerm, $varpub]);
   }
 }
 
@@ -76,7 +65,14 @@ if(isset($_POST['submit'])){
             <button type="submit" name="submit" class="search_button">
                <i class="fa-solid fa-magnifying-glass"></i>
             </button>
-            <button type="button" class="feelin_lucky">Feelin Lucky?</button>
+            <?php
+            $rand = "SELECT list_id FROM 3420_assg_lists WHERE publicity = ? ORDER BY RAND() LIMIT 1;";
+            $randid = $pdo->prepare($rand);
+            $randid->execute([$varpub]);
+            $listid = $randid->fetch(PDO::FETCH_ASSOC);
+            ?>
+
+            <button type="button" class="feelin_lucky"><a href="view-item.php?id=<?php echo $listid["list_id"]; ?>">Feelin Lucky?</button>
         </form>
     </div>
 

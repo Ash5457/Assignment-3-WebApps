@@ -326,4 +326,7 @@ div>.error {
   display: none;
 }
 
-
+a.feelin_lucky{
+  text-decoration: none;
+  color: white;
+}
