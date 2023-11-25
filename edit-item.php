@@ -159,7 +159,7 @@ if (isset($_POST['submit'])) {
     }
 
    // Redirect:
-   header("Location: edited.php?id=<?php echo $list_id; ?>");
+   header("Location: edited.php?id=".$list_id);
     exit;
     }
   }

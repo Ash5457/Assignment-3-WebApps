@@ -16,10 +16,13 @@ $userid = $_SESSION['user_id'] ?? null;
 $pdo = connectDB();
 
 // Check if the item is public or if the user is the owner
+$check = "SELECT user_id, publicity FROM 3420_assg_lists WHERE list_id = ?";
+$checkownership = $pdo->prepare($check);
+$checkownership->execute([$itemId]);
 $result = $checkownership->fetch(PDO::FETCH_ASSOC);
 
 // If the item is private and the user is not the owner, or if the item is not found, redirect to index.php
-if (!$result || ($result['publicity'] == "Private" && $result['user_id'] != $userid)) {
+if (!$result || ($result['publicity'] === 'Private' && $result['user_id'] != $userid)) {
     header("Location: index.php");
     exit();
 }
@@ -80,8 +83,8 @@ if (!$item) {
         <fieldset>
           <legend>Description</legend>
           <div>
-            <label for="details">Details:</label>
-            <p><?php echo $item['details']; ?></p>
+            <label for="description">Description:</label>
+            <p><?php echo $item['description']; ?></p>
           </div>
           <!-- Other HTML elements using data from $item -->
           <div>
