@@ -33,12 +33,10 @@ if(isset($_GET['id'])){
         <?php include './includes/nav.php' ?>
     </header>
     <main>
-        <form action="delete-account.php" method="post">
             <fieldset>
                 <legend>Congratulations!</legend>
                 <p>Your Item has been edited Successfully! You may see it <a href="view-item.php?id=<?php echo $list_id; ?>">Here</a></p>
             </fieldset>
-        </form>
     </main>
     <?php include './includes/footer.php' ?>
 </body>

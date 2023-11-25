@@ -4,7 +4,9 @@ session_start(); // Start the session
 require './includes/library.php';
 
 // Assume you have the item ID passed as a parameter in the URL (e.g., view-item.php?id=1)
-$itemId = $_GET['id'] ?? null;
+if(isset($_GET['id'])){
+  $list_id = $_GET['id'];}
+  $userid = $_SESSION['user_id'] ?? null;
 
 if (!$itemId) {
     // Redirect or handle the case where no item ID is provided
@@ -12,7 +14,6 @@ if (!$itemId) {
     exit();
 }
 
-$userid = $_SESSION['user_id'] ?? null;
 $pdo = connectDB();
 
 // Check if the item is public or if the user is the owner
@@ -22,7 +23,7 @@ $checkownership->execute([$itemId]);
 $result = $checkownership->fetch(PDO::FETCH_ASSOC);
 
 // If the item is private and the user is not the owner, or if the item is not found, redirect to index.php
-if (!$result || ($result['publicity'] === 'Private' && $result['user_id'] != $userid)) {
+if (!$result || ($result['publicity'] == "Private" && $result['user_id'] != $userid)) {
     header("Location: index.php");
     exit();
 }
@@ -83,8 +84,8 @@ if (!$item) {
         <fieldset>
           <legend>Description</legend>
           <div>
-            <label for="description">Description:</label>
-            <p><?php echo $item['description']; ?></p>
+            <label for="details">Details:</label>
+            <p><?php echo $item['details']; ?></p>
           </div>
           <!-- Other HTML elements using data from $item -->
           <div>
