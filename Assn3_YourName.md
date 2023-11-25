@@ -1,6 +1,6 @@
 # 3420 Assignment #3 - Fall 2023
 
-Name(s):
+Name(s): Akash Bahl (0470368) Farzad Imran (0729901)
 
 Live Loki link(s):
 
