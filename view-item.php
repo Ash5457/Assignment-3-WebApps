@@ -70,18 +70,13 @@ if (!$item) {
             <label>Parent List:</label>
             <a href="#">Places I want to go</a>
           </div>
-          <div>
-  <label>Entry Date:</label>
-  <?php if (isset($item['entry_date'])): ?>
-    <input type="date" value="<?php echo $item['entry_date']; ?>" disabled>
-  <?php else: ?>
-    <span>No Entry Date provided</span>
-  <?php endif; ?>
-</div>
           <?php if (isset($item['completion_date'])): ?>
             <div>
-              <label>Completion Date:</label>
-              <input type="date" value="<?php echo $item['completion_date']; ?>" disabled>
+              <?php
+                  if (isset($item['completion_date'])) {
+                  echo "Completion Date: " . $item['completion_date'];
+                  }
+              ?>
             </div>
           <?php endif; ?>
         </fieldset>
@@ -94,7 +89,7 @@ if (!$item) {
           <!-- Other HTML elements using data from $item -->
           <div>
             <?php if (isset($item['image_url'])): ?>
-              <label>Current File on The List:</label>
+              <label>Validation for the List:</label>
               <img src="<?php echo "/~$direx[2]/www_data/" . $item['image_url']; ?>" height="300">
             <?php endif; ?>
           </div>
