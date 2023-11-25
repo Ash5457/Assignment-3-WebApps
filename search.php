@@ -65,6 +65,8 @@ if(isset($_POST['submit'])){
             <button type="submit" name="submit" class="search_button">
                <i class="fa-solid fa-magnifying-glass"></i>
             </button>
+
+            <!-- Random id picker for the feeling lucky function -->
             <?php
             $rand = "SELECT list_id FROM 3420_assg_lists WHERE publicity = ? ORDER BY RAND() LIMIT 1;";
             $randid = $pdo->prepare($rand);
@@ -72,7 +74,7 @@ if(isset($_POST['submit'])){
             $listid = $randid->fetch(PDO::FETCH_ASSOC);
             ?>
 
-            <button type="button" class="feelin_lucky"><a href="view-item.php?id=<?php echo $listid["list_id"]; ?>">Feelin Lucky?</button>
+            <button type="button" class="feelin_lucky"><a class="feelin_lucky" href="view-item.php?id=<?php echo $listid["list_id"]; ?>">Feelin Lucky?</button>
         </form>
     </div>
 
