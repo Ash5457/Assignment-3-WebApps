@@ -6,6 +6,7 @@ $pdo = connectDB();
 
 $search = $_POST['search'] ?? "";
 $errors = array();
+$userLists = array();
 
 if(isset($_POST['submit'])){
 
@@ -31,7 +32,7 @@ if(isset($_POST['submit'])){
         $userList = $stmtUserList->fetch(PDO::FETCH_ASSOC);
 
         if ($userList) {
-            echo '<li><a href="view-item.php?id=' . $userList['list_id'] . '">' . $userList['title'] . '</a></li>';
+          $userLists[] = $userList;
         }
     }
   }
@@ -87,7 +88,7 @@ if(isset($_POST['submit'])){
         <p>No Results found</p>
       <?php else : ?>
         <ul>
-          <?php foreach ($stmt as $row) : ?>
+        <?php foreach ($stmt as $row) : ?>
             <li><a href="view-item.php?id=<?= $row['list_id'] ?>"><?= $row['title'] ?></a></li>
           <?php endforeach ?>
         </ul>
