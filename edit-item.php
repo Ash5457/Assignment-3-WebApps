@@ -135,8 +135,9 @@ if (isset($_POST['submit'])) {
 
       if(is_uploaded_file($_FILES["proof"]['tmp_name'])){
       // delete previous file in folder (as ones with different extensions would not be replaced)
+      if ($oldext != $ext){
         $del_file = $path.$formdata['image_url'];
-        array_map( "unlink", glob($del_file));
+        array_map( "unlink", glob($del_file));}
         move_uploaded_file($_FILES['proof']['tmp_name'], $newname);
       }
   }
